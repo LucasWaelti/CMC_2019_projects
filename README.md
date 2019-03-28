@@ -1,2 +1,3 @@
-# CMC_2019
-Solutions of the practicals of the class Computational Motor Control
+# 2019
+
+Computational Motor Control 2019 - Student Exercise Repository
