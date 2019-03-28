@@ -1,3 +1,4 @@
-# 2019
+# Computational Motor Control Projects
 
-Computational Motor Control 2019 - Student Exercise Repository
+## Lab5: Hill muscle model
+- Deadline: **11-04-2018 Midnight**
