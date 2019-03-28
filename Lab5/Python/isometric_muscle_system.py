@@ -103,7 +103,7 @@ class IsometricMuscleSystem(object):
 
         Example:
         --------
-            >>> import nump as np
+            >>> import numpy as np
             >>> from muscle import Muscle
             >>> from system_parameters import MuscleParameters
             >>> muscle = Muscle(MuscleParameters()) #: Default muscle
