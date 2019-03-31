@@ -81,13 +81,70 @@ def exercise1a():
 
     # Plotting
     plt.figure('Isometric muscle experiment')
-    plt.plot(result.time, result.tendon_force)
+    plt.plot(result.time, result.tendon_force,label='tendon force')
+    plt.plot(result.time, result.passive_force,label='passive force')
+    plt.plot(result.time, result.active_force,label='active force')
+    plt.plot(result.time, result.l_ce,label='l_ce')
+    plt.legend()
     plt.title('Isometric muscle experiment')
     plt.xlabel('Time [s]')
     plt.ylabel('Muscle Force')
     plt.grid()
     
+    # Run our experiment - relation between l_ce and active/oassive forces
+    muscle_stretch=np.arange(start=0.0,stop=0.32,step=0.005)
+    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=0.1)
+    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=0.5)
+    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.)
 
+def plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.):
+    # Defination of muscles
+    parameters = MuscleParameters()
+    # Create muscle object
+    muscle = Muscle(parameters)    
+    # Instatiate isometric muscle system
+    sys = IsometricMuscleSystem()
+    # Add the muscle to the system
+    sys.add_muscle(muscle)
+    # Set the initial condition
+    x0 = [0.0, sys.muscle.L_OPT] # x0[0] --> muscle stimulation intial value 
+                                 # x0[1] --> muscle contracticle length initial value
+    # Set the time for integration
+    t_start = 0.0
+    t_stop = 0.2
+    time_step = 0.001
+    time = np.arange(t_start, t_stop, time_step)
+    
+    # Store the results 
+    l_ce = []
+    active = []
+    passive = []
+    tendon = []
+    # Run the experiment for different length of the MTU
+    for l in muscle_stretch:
+        # Run the integration
+        result = sys.integrate(x0=x0,
+                           time=time,
+                           time_step=time_step,
+                           stimulation=muscle_stimulation,
+                           muscle_length=l)
+        l_ce.append(result.l_ce[-1])
+        active.append(result.active_force[-1])
+        passive.append(result.passive_force[-1])
+        tendon.append(result.tendon_force[-1])
+        
+    plt.figure('Active/passive forces as function of l_ce (activation: {})'
+               .format(muscle_stimulation))
+    plt.plot(l_ce, active,label='active force')
+    plt.plot(l_ce, passive,label='passive force')
+    plt.plot(l_ce, tendon,label='tendon force')
+    plt.legend()
+    plt.title('Isometric muscle experiment\nActive/passive forces as function '+  
+              'of l_ce\n(activation: {})'.format(muscle_stimulation))
+    plt.xlabel('l_ce [m]')
+    plt.ylabel('Force [N]')
+    plt.grid()
+        
 
 def exercise1d():
     """ Exercise 1d
