@@ -228,7 +228,76 @@ def exercise1d():
     plt.xlabel('Time [s]')
     plt.ylabel('Muscle contractilve velocity')
     plt.grid()
+    
+    # Run 1.d
+    load = np.arange(0,1000,20)
+    plotVceLoad(load,[0.1,0.5,1])
+    
+def plotVceLoad(load,ms=[1.]):
+    # Defination of muscles
+    muscle_parameters = MuscleParameters()
+    mass_parameters = MassParameters()
+    # Create muscle object
+    muscle = Muscle(muscle_parameters)
+    # Create mass object
+    mass = Mass(mass_parameters)
+    # Instatiate isotonic muscle system
+    sys = IsotonicMuscleSystem()
+    # Add the muscle to the system
+    sys.add_muscle(muscle)
+    # Add the mass to the system
+    sys.add_mass(mass)
+    
+    # Evalute for a single load
+    #load = 100.
 
+    # Set the initial condition
+    x0 = [0.0, sys.muscle.L_OPT,
+          sys.muscle.L_OPT + sys.muscle.L_SLACK, 0.0]
+    # x0[0] - -> activation
+    # x0[1] - -> contractile length(l_ce)
+    # x0[2] - -> position of the mass/load
+    # x0[3] - -> velocity of the mass/load
+
+    # Set the time for integration
+    t_start = 0.0
+    t_stop = 0.3
+    time_step = 0.001
+    time_stabilize = 0.2
+
+    time = np.arange(t_start, t_stop, time_step)
+    
+    plt.figure('Max Velocity-Tension curve')
+    for s in ms:
+        muscle_stimulation = s
+        v = []
+        for l in load:
+            # Run the integration
+            result = sys.integrate(x0=x0,
+                                   time=time,
+                                   time_step=time_step,
+                                   time_stabilize=time_stabilize,
+                                   stimulation=muscle_stimulation,
+                                   load=l)
+            # Find the max or min speed achieved
+            i = np.argmax(np.abs(result.v_ce))
+            v.append(-result.v_ce[i])
+            #if result[i].l_mtc < sys.muscle.L_OPT + sys.muscle.L_SLACK:
+        
+        for i in range(len(v)):
+            if i >= 1 and v[i]*v[i-1] <=0:
+                plt.plot(load[i],v[i],color='green', marker='x', linestyle='dashed',
+                         linewidth=2, markersize=12)
+        plt.plot(load, v,label='maximal speed\nMuscle stimulation: {}'.format(s))
+        plt.legend()
+        plt.title('Isotonic muscle experiment\nMax Velocity-Tension curve')
+        plt.xlabel('load [kg]')
+        plt.ylabel('CE speed [m/s]') 
+        #axes = plt.gca()
+        #axes.set_xlim([0.05,0.2])
+        #axes.set_ylim([0,1700])
+    plt.grid()
+    
 
 def exercise1():
     exercise1a()
