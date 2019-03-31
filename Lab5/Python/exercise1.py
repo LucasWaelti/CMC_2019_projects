@@ -91,13 +91,17 @@ def exercise1a():
     plt.ylabel('Muscle Force')
     plt.grid()
     
-    # Run our experiment - relation between l_ce and active/oassive forces
-    muscle_stretch=np.arange(start=0.0,stop=0.32,step=0.005)
-    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=0.1)
-    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=0.5)
-    plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.)
+    # Run 1.a and 1.b - relation between l_ce and active/oassive forces 
+    ms=np.arange(start=0.0,stop=0.32,step=0.005)
+    plotRelationLceAPForces(muscle_stretch=ms,muscle_stimulation=0.1)
+    plotRelationLceAPForces(muscle_stretch=ms,muscle_stimulation=0.5)
+    plotRelationLceAPForces(muscle_stretch=ms,muscle_stimulation=1.)
+    
+    # Run 1.c 
+    plotRelationLceAPForces(ms,l_opt=0.09)
+    plotRelationLceAPForces(ms,l_opt=0.13)
 
-def plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.):
+def plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.,l_opt=0.11):
     # Defination of muscles
     parameters = MuscleParameters()
     # Create muscle object
@@ -106,6 +110,7 @@ def plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.):
     sys = IsometricMuscleSystem()
     # Add the muscle to the system
     sys.add_muscle(muscle)
+    sys.muscle.L_OPT = l_opt
     # Set the initial condition
     x0 = [0.0, sys.muscle.L_OPT] # x0[0] --> muscle stimulation intial value 
                                  # x0[1] --> muscle contracticle length initial value
@@ -133,18 +138,23 @@ def plotRelationLceAPForces(muscle_stretch,muscle_stimulation=1.):
         passive.append(result.passive_force[-1])
         tendon.append(result.tendon_force[-1])
         
-    plt.figure('Active/passive forces as function of l_ce (activation: {})'
-               .format(muscle_stimulation))
+    plt.figure('Active/passive forces as function of l_ce\n'+
+               '(activation: {}, l_opt: {})'
+               .format(muscle_stimulation,l_opt))
     plt.plot(l_ce, active,label='active force')
     plt.plot(l_ce, passive,label='passive force')
     plt.plot(l_ce, tendon,label='tendon force')
     plt.legend()
     plt.title('Isometric muscle experiment\nActive/passive forces as function '+  
-              'of l_ce\n(activation: {})'.format(muscle_stimulation))
+              'of l_ce\n(activation: {}, l_opt: {})'.format(muscle_stimulation,l_opt))
     plt.xlabel('l_ce [m]')
     plt.ylabel('Force [N]')
+    axes = plt.gca()
+    axes.set_xlim([0.05,0.2])
+    axes.set_ylim([0,1700])
     plt.grid()
-        
+    
+
 
 def exercise1d():
     """ Exercise 1d
