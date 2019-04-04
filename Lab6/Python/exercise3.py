@@ -79,9 +79,16 @@ def exercise3():
 
     ##### Neural Network #####
     # The network consists of four neurons
-    N_params = NetworkParameters()  # Instantiate default network parameters
-    N_params.D = 2.  # To change a network parameter
+    N_params = NetworkParameters()  # Instantiate default network parameters 
     # Similarly to change w -> N_params.w = (4x4) array
+    # From lecture 4, slide 85 -> Generate oscillations !!
+    N_params.D = 2.
+    N_params.tau = [0.02,0.02,0.1,0.1]
+    N_params.b = [3.0,3.0,-3.0,-3.0]
+    N_params.w = [[0,-5,-5,0], # 1 <- 2
+                  [-5,0,0,-5],
+                  [5,-5,0,-5],
+                  [-5,5,0,0]] 
 
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
@@ -106,7 +113,7 @@ def exercise3():
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
 
-    x0_N = np.array([-0.5, 1, 0.5, 1])  # Neural Network Initial Conditions
+    x0_N = np.array([-0.5, 1, 0.5, 1])  # Neural Network Initial Conditions 
 
     x0 = np.concatenate((x0_P, x0_M, x0_N))  # System initial conditions
 
@@ -135,19 +142,34 @@ def exercise3():
     # Obtain the states of the system after integration
     # res is np.array [time, states]
     # states vector is in the same order as x0
-    res = sim.results()
+    #res = sim.results()
 
     # In order to obtain internal states of the muscle
     # you can access the results attribute in the muscle class
     muscle1_results = sim.sys.muscle_sys.Muscle1.results
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
+    
 
     # Plotting the results
-    plt.figure('Pendulum')
+    '''plt.figure('Pendulum')
     plt.title('Pendulum Phase')
     plt.plot(res[:, 0], res[:, :2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
+    plt.grid()'''
+    
+    # Plotting the neuronal activation
+    # Access the neurons outputs:
+    # [t] theta theta. A1 lCE1 A2 lCE2 m1 m2 m3 m4
+    plt.figure('Neuron output')
+    plt.title('Membrane potentials')
+    plt.plot(res[:, 0], res[:, 7],label='m1')
+    plt.plot(res[:, 0], res[:, 8],label='m2')
+    plt.plot(res[:, 0], res[:, 9],label='m3')
+    plt.plot(res[:, 0], res[:, 10],label='m4')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Activation [0,1]')
+    plt.legend()
     plt.grid()
 
     if DEFAULT["save_figures"] is False:
