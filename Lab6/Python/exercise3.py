@@ -127,7 +127,10 @@ def exercise3():
     # Add external inputs to neural network
 
     # sim.add_external_inputs_to_network(np.ones((len(time), 4)))
-    # sim.add_external_inputs_to_network(ext_in)
+    #ext_in = np.ones((len(time), 4))
+    #ext_in[:,2] = 0.2
+    #ext_in[:,3] = 0.2
+    #sim.add_external_inputs_to_network(ext_in)
 
     sim.initalize_system(x0, time)  # Initialize the system state
 
@@ -150,18 +153,118 @@ def exercise3():
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
     
 
-    # Plotting the results
-    '''plt.figure('Pendulum')
+    # Plotting the phase
+    plt.figure('Pendulum')
     plt.title('Pendulum Phase')
-    plt.plot(res[:, 0], res[:, :2])
+    plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
-    plt.grid()'''
+    plt.grid()
     
     # Plotting the neuronal activation
     # Access the neurons outputs:
     # [t] theta theta. A1 lCE1 A2 lCE2 m1 m2 m3 m4
     plt.figure('Neuron output')
+    plt.title('Membrane potentials')
+    plt.plot(res[:, 0], res[:, 7],label='m1')
+    plt.plot(res[:, 0], res[:, 8],label='m2')
+    plt.plot(res[:, 0], res[:, 9],label='m3')
+    plt.plot(res[:, 0], res[:, 10],label='m4')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Activation [0,1]')
+    plt.legend()
+    plt.grid()
+
+    if DEFAULT["save_figures"] is False:
+        plt.show()
+    else:
+        figures = plt.get_figlabels()
+        pylog.debug("Saving figures:\n{}".format(figures))
+        for fig in figures:
+            plt.figure(fig)
+            save_figure(fig)
+            plt.close(fig)
+
+    # To animate the model, use the SystemAnimation class
+    # Pass the res(states) and systems you wish to animate
+    simulation = SystemAnimation(
+        res,
+        sim.sys.pendulum_sys,
+        sim.sys.muscle_sys,
+        sim.sys.neural_sys)
+    # To start the animation
+    simulation.animate()
+    
+    # 3.b
+    ext_in = np.ones((len(time), 4))*0.0
+    plotExternalDrive(sys,x0,ext_in,typ='low')
+    
+    ext_in = np.ones((len(time), 4))
+    plotExternalDrive(sys,x0,ext_in,typ='high')
+    
+    ext_in = np.ones((len(time), 4))
+    ext_in[:,0] *= 0.1
+    ext_in[:,1] *= 0.1
+    plotExternalDrive(sys,x0,ext_in,typ='asymetric')
+    
+def plotExternalDrive(sys,x0,ext_in,typ='low'):
+    ##### Time #####
+    t_max = 2.5  # Maximum simulation time
+    time = np.arange(0., t_max, 0.001)  # Time vector
+    
+    sim = SystemSimulation(sys)  # Instantiate Simulation object
+
+    # Add external inputs to neural network
+
+    # sim.add_external_inputs_to_network(np.ones((len(time), 4)))
+    #ext_in = np.ones((len(time), 4))
+    #ext_in[:,2] = 0.2
+    #ext_in[:,3] = 0.2
+    sim.add_external_inputs_to_network(ext_in)
+
+    sim.initalize_system(x0, time)  # Initialize the system state
+
+    # Integrate the system for the above initialized state and time
+    sim.simulate()
+
+    # Obtain the states of the system after integration
+    # res is np.array [time, states]
+    # states vector is in the same order as x0
+    res = sim.results()
+
+    # Obtain the states of the system after integration
+    # res is np.array [time, states]
+    # states vector is in the same order as x0
+    #res = sim.results()
+
+    # In order to obtain internal states of the muscle
+    # you can access the results attribute in the muscle class
+    muscle1_results = sim.sys.muscle_sys.Muscle1.results
+    muscle2_results = sim.sys.muscle_sys.Muscle2.results
+    
+
+    # Plotting the phase
+    plt.figure('Pendulum Phase, {} drive'.format(typ))
+    plt.title('Pendulum Phase, {} drive'.format(typ))
+    plt.plot(res[:, 1], res[:, 2])
+    plt.xlabel('Position [rad]')
+    plt.ylabel('Velocity [rad.s]')
+    plt.grid()
+    
+    # Plotting the state evolution
+    plt.figure('Pendulum State, {} drive'.format(typ))
+    plt.title('Pendulum State, {} drive'.format(typ))
+    plt.plot(res[:, 0], res[:, 1], label='position [rad]')
+    plt.plot(res[:, 0], res[:, 2], label='speed [rad/s]')
+    plt.xlabel('Position [rad]')
+    plt.ylabel('Velocity [rad.s]')
+    plt.legend()
+    plt.grid()
+    
+    # Plotting the neuronal activation
+    # Access the neurons outputs:
+    # [t] theta theta. A1 lCE1 A2 lCE2 m1 m2 m3 m4
+    plt.figure('Neuron output, {} drive'.format(typ))
     plt.title('Membrane potentials')
     plt.plot(res[:, 0], res[:, 7],label='m1')
     plt.plot(res[:, 0], res[:, 8],label='m2')
