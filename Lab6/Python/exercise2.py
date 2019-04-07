@@ -9,6 +9,7 @@ from math import sqrt
 import cmc_pylog as pylog
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import signal
 
 from cmcpack import DEFAULT
 from cmcpack.plot import save_figure
@@ -113,10 +114,11 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-    act1 = np.sin(10*time) * 1
+    act1 = np.sin(1.5*2*np.pi*time) * 1
     act1 = np.reshape(act1, (len(time),1))
-    act2 = np.sin(10*time + np.pi) * 1
+    act2 = np.sin(1.5*2*np.pi*time + np.pi) * 1
     act2 = np.reshape(act2, (len(time),1))
+    
 
     activations = np.hstack((act1, act2))
 
@@ -166,8 +168,8 @@ def exercise2():
     plt.grid()
     
     #2c
-    line1=plotRelationFrequency(time, sim, x0, freq=3)
-    line2=plotRelationFrequency(time, sim, x0, freq=20)
+    plotRelationFrequency(time, sim, x0, freq=1)
+    plotRelationFrequency(time, sim, x0, freq=3)
     
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
@@ -187,13 +189,13 @@ def exercise2():
             save_figure(fig)
             plt.close(fig)
     
-def plotRelationFrequency(time, sim, x0, freq=10):
+def plotRelationFrequency(time, sim, x0, freq=1.5):
          # Add muscle activations to the simulation
     # Here you can define your muscle activation vectors
     # that are time dependent
-    act1 = np.sin(freq*time) * 1
+    act1 = np.sin(freq*2*np.pi*time) * 1
     act1 = np.reshape(act1, (len(time),1))
-    act2 = np.sin(freq*time + np.pi) * 1
+    act2 = np.sin(freq*2*np.pi*time + np.pi) * 1
     act2 = np.reshape(act2, (len(time),1))
         
     activations = np.hstack((act1, act2))
@@ -225,16 +227,18 @@ def plotRelationFrequency(time, sim, x0, freq=10):
     
     # Plotting the state plot
     plt.figure('Pendulum State Plot Frequency-Amplitude Relationship')
-    plt.title('Frequency-Amplitude Relationship with low and high muscle activation frequency')
-    plt.plot(time, res[:, 1])
+    plt.title('Frequency-Amplitude Relationship')
+    plt.plot(time, res[:, 1],label='%d Hz' %freq)
+    plt.legend()
     plt.xlabel('Time [s]')
     plt.ylabel('Position [rad]')
     plt.grid()
     
     # Plotting the phase plot
     plt.figure('Pendulum Phase Plot Frequency-Amplitude Relationship')
-    plt.title('Frequency-Amplitude Relationship with low and high muscle activation frequency')
-    plt.plot(res[:, 1], res[:, 2])
+    plt.title('Frequency-Amplitude Relationship')
+    plt.plot(res[:, 1], res[:, 2],label='%d Hz' %freq)
+    plt.legend()
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
