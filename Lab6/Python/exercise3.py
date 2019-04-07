@@ -154,26 +154,30 @@ def exercise3():
     
 
     # Plotting the phase
-    plt.figure('Pendulum')
+    fig = plt.figure('Pendulum')
     plt.title('Pendulum Phase')
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
-    plt.ylabel('Velocity [rad.s]')
+    plt.ylabel('Velocity [rad/s]')
     plt.grid()
+    fig.tight_layout()
+    fig.savefig('graphs/PendulumPhase.png')
     
     # Plotting the neuronal activation
     # Access the neurons outputs:
     # [t] theta theta. A1 lCE1 A2 lCE2 m1 m2 m3 m4
-    plt.figure('Neuron output')
+    fig = plt.figure('Neuron output')
     plt.title('Membrane potentials')
     plt.plot(res[:, 0], res[:, 7],label='m1')
     plt.plot(res[:, 0], res[:, 8],label='m2')
     plt.plot(res[:, 0], res[:, 9],label='m3')
     plt.plot(res[:, 0], res[:, 10],label='m4')
     plt.xlabel('Time [s]')
-    plt.ylabel('Activation [0,1]')
+    plt.ylabel('Potential')
     plt.legend()
     plt.grid()
+    fig.tight_layout()
+    fig.savefig('graphs/MembranePotentials.png')
 
     if DEFAULT["save_figures"] is False:
         plt.show()
@@ -205,7 +209,7 @@ def exercise3():
     ext_in = np.ones((len(time), 4))
     ext_in[:,0] *= 0.1
     ext_in[:,1] *= 0.1
-    plotExternalDrive(sys,x0,ext_in,typ='asymetric')
+    plotExternalDrive(sys,x0,ext_in,typ='asymmetric') 
     
 def plotExternalDrive(sys,x0,ext_in,typ='low'):
     ##### Time #####
@@ -244,36 +248,42 @@ def plotExternalDrive(sys,x0,ext_in,typ='low'):
     
 
     # Plotting the phase
-    plt.figure('Pendulum Phase, {} drive'.format(typ))
+    fig = plt.figure('Pendulum Phase, {} drive'.format(typ))
     plt.title('Pendulum Phase, {} drive'.format(typ))
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
-    plt.ylabel('Velocity [rad.s]')
+    plt.ylabel('Velocity [rad/s]')
     plt.grid()
+    fig.tight_layout()
+    fig.savefig('graphs/PendulumPhase{}Drive.png'.format(typ))
     
     # Plotting the state evolution
-    plt.figure('Pendulum State, {} drive'.format(typ))
+    fig = plt.figure('Pendulum State, {} drive'.format(typ))
     plt.title('Pendulum State, {} drive'.format(typ))
     plt.plot(res[:, 0], res[:, 1], label='position [rad]')
     plt.plot(res[:, 0], res[:, 2], label='speed [rad/s]')
-    plt.xlabel('Position [rad]')
-    plt.ylabel('Velocity [rad.s]')
+    plt.xlabel('Time [s]')
+    plt.ylabel('')
     plt.legend()
     plt.grid()
+    fig.tight_layout()
+    fig.savefig('graphs/PendulumState{}drive.png'.format(typ))
     
     # Plotting the neuronal activation
     # Access the neurons outputs:
     # [t] theta theta. A1 lCE1 A2 lCE2 m1 m2 m3 m4
-    plt.figure('Neuron output, {} drive'.format(typ))
+    fig = plt.figure('Neuron output, {} drive'.format(typ))
     plt.title('Membrane potentials')
     plt.plot(res[:, 0], res[:, 7],label='m1')
     plt.plot(res[:, 0], res[:, 8],label='m2')
     plt.plot(res[:, 0], res[:, 9],label='m3')
     plt.plot(res[:, 0], res[:, 10],label='m4')
     plt.xlabel('Time [s]')
-    plt.ylabel('Activation [0,1]')
+    plt.ylabel('Potential')
     plt.legend()
     plt.grid()
+    fig.tight_layout()
+    fig.savefig('graphs/MembranePotentials{}drive.png'.format(typ))
 
     if DEFAULT["save_figures"] is False:
         plt.show()
