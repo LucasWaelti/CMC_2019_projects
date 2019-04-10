@@ -167,6 +167,15 @@ def exercise2():
     plt.ylabel('Position [rad]')
     plt.grid()
     
+    plt.figure('Muscle activation wave forms')
+    plt.title('Muscle activation wave forms')
+    plt.plot(time, np.sin(1.5*2*np.pi*time),label='Muscle 1 activation')
+    plt.plot(time, np.sin(1.5*2*np.pi*time + np.pi), label='Muscle 2 activation')
+    plt.legend()
+    plt.xlabel('Time [s]')
+    plt.ylabel('Muscle Activation')
+    plt.grid()
+    
     #2c
     plotRelationFrequency(time, sim, x0, freq=1)
     plotRelationFrequency(time, sim, x0, freq=3)
