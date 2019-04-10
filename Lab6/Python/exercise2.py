@@ -9,6 +9,7 @@ from math import sqrt
 import cmc_pylog as pylog
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import signal
 
 from cmcpack import DEFAULT
 from cmcpack.plot import save_figure
@@ -91,7 +92,7 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
+    t_max = 5  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -113,8 +114,11 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
+    act1 = np.sin(1.5*2*np.pi*time) * 1
+    act1 = np.reshape(act1, (len(time),1))
+    act2 = np.sin(1.5*2*np.pi*time + np.pi) * 1
+    act2 = np.reshape(act2, (len(time),1))
+    
 
     activations = np.hstack((act1, act2))
 
@@ -130,7 +134,7 @@ def exercise2():
     # so by
     sim.sys.pendulum_sys.parameters.PERTURBATION = True
     # The above line sets the state of the pendulum model to zeros between
-    # time interval 1.2 < t < 1.25. You can change this and the type of
+    # time interval 3.0 < t < 3.25. You can change this and the type of
     # perturbation in
     # pendulum_system.py::pendulum_system function
 
@@ -148,17 +152,30 @@ def exercise2():
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
 
     # Plotting the results
-    plt.figure('Pendulum')
+    plt.figure('Pendulum Phase Plot')
     plt.title('Pendulum Phase')
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
-
+    
+    # Plotting the state plot
+    plt.figure('Pendulum State Plot')
+    plt.title('Pendulum State')
+    plt.plot(time, res[:, 1])
+    plt.xlabel('Time [s]')
+    plt.ylabel('Position [rad]')
+    plt.grid()
+    
+    #2c
+    plotRelationFrequency(time, sim, x0, freq=1)
+    plotRelationFrequency(time, sim, x0, freq=3)
+    
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
     simulation = SystemAnimation(res, pendulum, muscles)
     # To start the animation
+    
     if DEFAULT["save_figures"] is False:
         simulation.animate()
 
@@ -171,6 +188,61 @@ def exercise2():
             plt.figure(fig)
             save_figure(fig)
             plt.close(fig)
+    
+def plotRelationFrequency(time, sim, x0, freq=1.5):
+         # Add muscle activations to the simulation
+    # Here you can define your muscle activation vectors
+    # that are time dependent
+    act1 = np.sin(freq*2*np.pi*time) * 1
+    act1 = np.reshape(act1, (len(time),1))
+    act2 = np.sin(freq*2*np.pi*time + np.pi) * 1
+    act2 = np.reshape(act2, (len(time),1))
+        
+    activations = np.hstack((act1, act2))
+        
+    # Method to add the muscle activations to the simulation
+    
+    sim.add_muscle_activations(activations)
+
+    # Simulate the system for given time
+    
+    sim.initalize_system(x0, time)  # Initialize the system state
+    
+    #: If you would like to perturb the pedulum model then you could do
+    # so by
+    sim.sys.pendulum_sys.parameters.PERTURBATION = False
+    # The above line sets the state of the pendulum model to zeros between
+    # time interval 3.0 < t < 3.25. You can change this and the type of
+    # perturbation in
+    # pendulum_system.py::pendulum_system function
+
+    # Integrate the system for the above initialized state and time
+    sim.simulate()
+
+    # Obtain the states of the system after integration
+    # res is np.array [time, states]
+    # states vector is in the same order as x0
+    res = sim.results()
+    
+    
+    # Plotting the state plot
+    plt.figure('Pendulum State Plot Frequency-Amplitude Relationship')
+    plt.title('Frequency-Amplitude Relationship')
+    plt.plot(time, res[:, 1],label='%d Hz' %freq)
+    plt.legend()
+    plt.xlabel('Time [s]')
+    plt.ylabel('Position [rad]')
+    plt.grid()
+    
+    # Plotting the phase plot
+    plt.figure('Pendulum Phase Plot Frequency-Amplitude Relationship')
+    plt.title('Frequency-Amplitude Relationship')
+    plt.plot(res[:, 1], res[:, 2],label='%d Hz' %freq)
+    plt.legend()
+    plt.xlabel('Position [rad]')
+    plt.ylabel('Velocity [rad.s]')
+    plt.grid()
+        
 
 
 if __name__ == '__main__':
