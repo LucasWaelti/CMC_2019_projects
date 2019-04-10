@@ -170,6 +170,7 @@ def exercise2():
     #2c
     plotRelationFrequency(time, sim, x0, freq=1)
     plotRelationFrequency(time, sim, x0, freq=3)
+    plotRelationFrequency(time, sim, x0, freq=10)
     
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
