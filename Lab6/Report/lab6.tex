@@ -4,9 +4,9 @@
 
 \pagestyle{fancy}
 \lhead{\textit{\textbf{Computational Motor Control, Spring 2019} \\
-    Python exercise, Lab 6, GRADED}} \rhead{Student \\ Names}
+    Python exercise, Lab 6, GRADED}} \rhead{Student \\ Aurélien Morel, Lucas Wälti, Luca Kiener}
 
-\section*{Student names: \ldots (please update)}
+\section*{Student names: Aurélien Morel, Lucas Wälti, Luca Kiener}
 \textit{Instructions: Update this file (or recreate a similar one,
   e.g.\ in Word) to prepare your answers to the questions. Feel free
   to add text, equations and figures as needed. Hand-written notes,
@@ -218,7 +218,21 @@ To complete this exercise you will make use of the following files,
   and discuss how it influences the pendulum resting position and the
   torques muscles can apply at different joint angles. You are free to implement
 this code by yourself as it does not have any other dependencies.}
+We see that for asymmetric insertions, the results for both muscle length and moment arm length are not symmetric around $\theta=0$ so the resting position of the pendulum would be shifted. 
 \label{sec:2a}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{figures/fig3}
+  \caption{Muscle length and moment arm length with varying $\theta$, symmetric attachment.}
+  \label{fig:2a}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{figures/fig4}
+  \caption{Muscle length and moment arm length with varying $\theta$, asymmetric attachment }
+  \label{fig:2abis}
+\end{figure}
+
 
 
 \subsection*{2b. Using simple activation wave forms (example : sine or
@@ -229,11 +243,53 @@ this code by yourself as it does not have any other dependencies.}
   Explain and show the activations wave forms you used. Use
   \newline \fileref{pendulum\_system.py::PendulumSystem::pendulum\_system} function to perturb the model.}
 \label{sec:2c}
+In order to achieve a limit cycle behavior, we stimulate our muscles with sinusoidal signals (figure \ref{fig:2b-activation}). To have an oscillatory behavior, we include a phase shift of $\pi$ between the two stimulations signals. We reach a limit cycle when the pendulum stabilizes as seen in figure \ref{fig:ex2b}. The limit cycle is stable: indeed, when we add a perturbation, the pendulum stabilizes and goes back to the limit cycle behavior. 
+
+\begin{figure}[ht]
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/ex2b-c/Pendulum_Phase_Plot.png}
+    \caption{Pendulum state phase with perturbation demonstrating the limit cycle behavior.}
+    \label{fig:ex2b-state-phase}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/ex2b-c/Pendulum_State_Plot.png}
+    \caption{Pendulum position as a function of time demonstrating regular oscillations, recovering after the perturbation.}
+    \label{fig:ex2b-state}
+  \end{subfigure}
+  \caption{The state-space representation clearly displays a limit cycle behavior. A perturbation is applied but the system converges quickly back to the limit cycle.}
+  \label{fig:ex2b}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.55]{figures/ex2b-c/Muscle_activation_wave_forms.png}
+  \caption{Activation signal sent to each muscle as a sine wave.}
+  \label{fig:2b-activation}
+\end{figure}
 
 
 \subsection*{2c. Show the relationship between stimulation
   frequency and amplitude with the resulting pendulum's behavior.}
 \label{sec:2e}
+Figure \ref{fig:ex2c} clearly shows that at higher muscle activation frequency (10 Hz) the amplitude is smaller than at lower muscle activation frequency (1 Hz). It seems logical because at high frequencies, the pendulum has less time to complete its swing motion. Therefore, the motion amplitude is reduced. 
+%the pendulum doesn't have a lot of time to change phase so the amplitude stays low. 
+
+\begin{figure}[ht]
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/ex2b-c/Pendulum_Phase_Plot_Frequency-Amplitude_Relationship.png}
+    \caption{State phase plot for different stimulation frequencies.}
+    \label{fig:ex2c-state-phase}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/ex2b-c/Pendulum_State_Plot_Frequency-Amplitude_Relationship.png}
+    \caption{Pendulum position as a function of time for different stimulation frequencies.}
+    \label{fig:ex2c-state}
+  \end{subfigure}
+  \caption{Measurements on the effect of the stimulation frequency on the pendulum behavior.}
+  \label{fig:ex2c}
+\end{figure}
 
 \newpage
 \section*{Exercise 3 : Neural network driven pendulum model with
@@ -284,7 +340,33 @@ To complete this exercise, additionally you will have to use
   behavior. Plot the output of the network and the phase plot of
 the pendulum}
 \label{sec:4a}
+We applied the following parameter values to the network, as discussed in the course:
+\begin{verbatim}
+    N_params.D   = 2.
+    N_params.tau = [0.02,0.02,0.1,0.1]
+    N_params.b   = [3.0,3.0,-3.0,-3.0]
+    N_params.w = [[0,-5,-5,0],
+                  [-5,0,0,-5],
+                  [5,-5,0,-5],
+                  [-5,5,0,0]] 
+\end{verbatim}
+This resulted in the following behavior, as shown in figure \ref{fig:ex3-nominal}.
 
+\begin{figure}[ht]
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/MembranePotentials.png}
+    \caption{Membrane potential of neurons 1,2,3 and 4.}
+    \label{fig:ex3-membrane-nominal}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/PendulumPhase.png}
+    \caption{Phase plot of angle and rotation speed of the pendulum illustrating the limit phase behavior of the system.}
+    \label{fig:ex3-phase-nominal}
+  \end{subfigure}
+  \caption{The output of the network is illustrated in figure \ref{fig:ex3-membrane-nominal} while the phase of the pendulum is shown in figure \ref{fig:ex3-phase-nominal}.}
+  \label{fig:ex3-nominal}
+\end{figure}
 
 \subsection*{3b. As seen in the course, apply an external drive to the
   individual neurons and explain how the system is affected. Show
@@ -292,6 +374,41 @@ the pendulum}
   drive to the network you can use the method \\
   \fileref{system\_simulation.py::add\_external\_inputs\_to\_network} }
 \label{sec:4c}
+Figures \ref{fig:ex3-low} and \ref{fig:ex3-high} clearly show the effect of the drive. There is a clear change in the oscillations frequency. The oscillations seem to be approximately 25\% faster with high drive in comparison with the case where there is no drive. 
+
+It is important to note that the amplitude is not affected by the change of drive, only the frequencies are altered. 
+
+\begin{figure}[ht]
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/MembranePotentialslowdrive.png}
+    \caption{Membrane potential of neurons 1,2,3 and 4.}
+    \label{fig:ex3-membrane-low}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/PendulumStatelowdrive.png}
+    \caption{Angle and rotation speed of the pendulum as a function of the time.}
+    \label{fig:ex3-state-low}
+  \end{subfigure}
+  \caption{Illustration of the behavior for low drive.}
+  \label{fig:ex3-low}
+\end{figure}
+
+\begin{figure}[ht]
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/MembranePotentialshighdrive.png}
+    \caption{Membrane potential of neurons 1,2,3 and 4.}
+    \label{fig:ex3-membrane-high}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figures/Exercise3/PendulumStatehighdrive.png}
+    \caption{Angle and rotation speed of the pendulum as a function of the time.}
+    \label{fig:ex3-state-high}
+  \end{subfigure}
+  \caption{Illustration of the behavior for high drive.}
+  \label{fig:ex3-high}
+\end{figure}
 
 
 \subsection*{3c. [Open Question] What are the limitations of the half
@@ -299,7 +416,9 @@ the pendulum}
   pendulum? What would be the effect of sensory feedback on this
   model? (No plots required)}
 \label{sec:4d}
+This network model does not offer a large variety of frequencies which might be too limiting for a good muscle control. Furthermore, the amplitudes are also an important feature that might need to be adaptable, which is not something the model seems to offer. 
 
+A sensory feedback would automatically set the drive level according to some defined stimulus. This would be a way of automatically switching from walk to swimming as we saw in the course. The frequency of the oscillations are faster when swimming than when walking. 
 
 \end{document}
 
