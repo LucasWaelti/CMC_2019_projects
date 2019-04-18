@@ -8,17 +8,33 @@ from solvers import euler, rk4
 
 def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
     """Network phases ODE"""
-    return np.zeros_like(phases)
+    print(phases_desired.shape)
+    print(phases.shape)
+    print(freqs.shape)
+    print(coupling_weights.shape)
+    dphases = np.zeros_like(phases)
+    for i in range(0, len(freqs)):
+        dphases[i] += 2 * np.pi * freqs[i]
+        for j in range(0, len(freqs)):
+            dphases[i] += 1 * coupling_weights[i][j] * np.sin(phases[j] - phases[i] - phases_desired[i][j])
+                      
+    return dphases
 
 
 def amplitudes_ode(time, amplitudes, rate, amplitudes_desired):
     """Network amplitudes ODE"""
-    return np.zeros_like(amplitudes)
-
+    damplitudes = np.zeros_like(amplitudes)
+    for i in range(0, len(amplitudes)):
+        damplitudes[i] = rate[i] * (amplitudes_desired[i] - amplitudes[i])
+    return damplitudes
 
 def motor_output(phases_left, phases_right, amplitudes_left, amplitudes_right):
     """Motor output"""
-    return np.zeros_like(amplitudes_left)
+    dmotor_output = np.zeros_like(amplitudes_left)
+    for i in range(0, len(dmotor_output)):
+        dmotor_output[i] = amplitudes_left[i] * (1 + np.cos(amplitudes_left[i])) - amplitudes_right[i] * (1 + np.cos(amplitudes_right[i]))
+    
+    return dmotor_output
 
 
 class ODESolver(object):
@@ -57,17 +73,31 @@ class PhaseEquation(ODESolver):
         self.phases = 1e-4*np.random.ranf(2*self.n_joints)
         self.freqs = np.zeros(2*self.n_joints)
         self.coupling_weights = np.zeros([2*self.n_joints, 2*self.n_joints])
-        self.phases_desired = np.zeros([2*self.n_joints, 2*self.n_joints])
+        self.phases_desired = np.zeros([2*self.n_joints, 2*self.n_joints])     #size initialization
         self.set_parameters(freqs, phase_lag)
 
     def set_parameters(self, freqs, phase_lag):
         """Set parameters of the network"""
 
         # Set coupling weights
-        pylog.warning("Coupling weights must be set")
-
         # Set desired phases
-        pylog.warning("Desired phases must be set")
+        # Set frequencies
+        
+        for i in range(0, len(self.freqs)):
+            self.freqs[i] = freqs
+            for j in range(0, len(self.freqs)):
+                if i == j + 1:
+                    self.coupling_weights[i][j] = 10
+                    self.phases_desired[i][j] = phase_lag
+                if i == j - 1:
+                    self.coupling_weights[i][j] = 10
+                    self.phases_desired[i][j] = -phase_lag
+                if i == j + 10:
+                    self.coupling_weights[i][j] = 10
+                    self.phases_desired[i][j] = phase_lag
+                if i == j - 10:
+                    self.coupling_weights[i][j] = 10
+                    self.phases_desired[i][j] = -phase_lag
 
     def step(self):
         """Step"""
@@ -95,10 +125,12 @@ class AmplitudeEquation(ODESolver):
         """Set parameters of the network"""
 
         # Set convergence rates
-        pylog.warning("Convergence rates must be set")
-
         # Set desired amplitudes
-        pylog.warning("Desired amplitudes must be set")
+        
+        for i in range(0, len(self.rates)):
+                self.rates[i] = 1
+                self.amplitudes_desired[i] = 1
+        
 
     def step(self):
         """Step"""

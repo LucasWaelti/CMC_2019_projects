@@ -75,7 +75,7 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
         turn=parameters[3]
     )
 
-    # Simulation
+    # Simulation MAIN LOOP
     iteration = 0
     while world.step(timestep) != -1:
         iteration += 1
