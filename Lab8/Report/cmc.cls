@@ -8,7 +8,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[american]{babel}
 \usepackage[hidelinks]{hyperref}
-\usepackage{soul}
+%\usepackage{soul}
 
 % Mathematics packages
 \usepackage{array}
@@ -19,7 +19,7 @@
 
 % Figures packages
 \usepackage{graphicx}
-\usepackage{wrapfig}
+%\usepackage{wrapfig}
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage[font={it}]{caption}
@@ -59,11 +59,8 @@ includehead
 
 %---- Tables ----%
 \usepackage{tabularx}
-\usepackage{multirow}
-\usepackage{multicol}
-
-% ---- Title ----%
-\title{Computational Motor Control - 2019}
+%\usepackage{multirow}
+%\usepackage{multicol}
 
 % ----newcommand----%
 \newcommand{\corr}[1]{\textcolor{red}{#1}}
