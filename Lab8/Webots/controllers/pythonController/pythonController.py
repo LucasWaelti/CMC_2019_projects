@@ -92,7 +92,7 @@ def main():
     """Main"""
 
     # Duration of each simulation
-    simulation_duration = 20
+    simulation_duration = 10
 
     # Get supervisor to take over the world
     world = Supervisor()
@@ -104,18 +104,25 @@ def main():
     reset = RobotResetControl(world, n_joints)
 
     ''' Simulation setup '''
-    freqs = np.ones(20) # 20 amplitudes to be specified
-    amplitude = np.ones(20)/10 #[1, 1] # 20 amplitudes to be specified
-    phase_lag = 2*np.pi/10 # Single scalar
-    turn = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py
+    # Experiment 0
+    freqs1 = np.ones(20) # 20 amplitudes to be specified
+    amplitude1 = np.ones(20)/10 #[1, 1] # 20 amplitudes to be specified
+    phase_lag1 = 2*np.pi/10 # Single scalar
+    turn1 = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py
+
+    # Experiment 1
+    freqs2 = np.ones(20)*2 # Higher frequency
+    amplitude2 = np.ones(20)/5 # Greater amplitude 
+    phase_lag2 = 2*np.pi/10 
+    turn2 = 0 
 
     # Simulation example
     #amplitude = None
     #phase_lag = None
     #turn = None
     parameter_set = [
-        [freqs, amplitude, phase_lag, turn],
-        [freqs, amplitude, phase_lag, turn]
+        [freqs1, amplitude1, phase_lag1, turn1],
+        [freqs2, amplitude2, phase_lag2, turn2]
     ]
     for simulation_i, parameters in enumerate(parameter_set):
         reset.reset()
@@ -130,7 +137,7 @@ def main():
     # Pause
     world.simulationSetMode(world.SIMULATION_MODE_PAUSE)
     pylog.info("Simulations complete")
-    world.simulationQuit(0)
+    #world.simulationQuit(0)
 
 
 if __name__ == '__main__':
