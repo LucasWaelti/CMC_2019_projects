@@ -6,7 +6,7 @@ import cmc_pylog as pylog
 from solvers import euler, rk4
 
 
-def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
+def phases_ode(time, phases, freqs, coupling_weights, phases_desired, amplitudes):
     """Network phases ODE"""
     '''print(phases_desired.shape)(20, 20) [i,j] represents relation between i and j
     print(phases.shape)(20,) **state**
@@ -14,7 +14,7 @@ def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
     print(coupling_weights.shape)(20, 20)'''
 
     # Oscillator amplitude r (missing in provided implementation) -> assumed to be 1
-    r = np.ones(20)
+    r = amplitudes#np.ones(20)
 
     # State derivative (phases derivative)
     dphases = np.zeros_like(phases)
@@ -112,13 +112,14 @@ class PhaseEquation(ODESolver):
                     self.coupling_weights[i][j] = 10
                     self.phases_desired[i][j] = -np.pi #phase_lag
 
-    def step(self):
+    def step(self,amplitudes):
         """Step"""
         self.phases += self.integrate(
             self.phases, # phases are the state
             self.freqs,  # All remaining arguments are combined into *parameters
             self.coupling_weights,
-            self.phases_desired
+            self.phases_desired,
+            amplitudes 
         )
 
 
@@ -151,6 +152,7 @@ class AmplitudeEquation(ODESolver):
             self.rates,
             self.amplitudes_desired
         )
+        return self.amplitudes
 
 
 class SalamanderNetwork(object):
@@ -173,8 +175,9 @@ class SalamanderNetwork(object):
 
     def step(self):
         """Step"""
-        self.phase_equation.step()
-        self.amplitude_equation.step()
+        # Correction to take amplitude into account in phase ode!!
+        amplitudes = self.amplitude_equation.step()
+        self.phase_equation.step(amplitudes) 
 
     def get_motor_position_output(self):
         """Get motor position"""
