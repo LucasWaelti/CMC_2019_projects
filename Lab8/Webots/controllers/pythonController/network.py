@@ -8,15 +8,28 @@ from solvers import euler, rk4
 
 def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
     """Network phases ODE"""
-    print(phases_desired.shape)
-    print(phases.shape)
-    print(freqs.shape)
-    print(coupling_weights.shape)
+    '''print(phases_desired.shape)(20, 20) [i,j] represents relation between i and j
+    print(phases.shape)(20,) **state**
+    print(freqs.shape)(20,)
+    print(coupling_weights.shape)(20, 20)'''
+
+    # Oscillator amplitude r (missing in provided implementation) -> assumed to be 1
+    r = np.ones(20)
+
+    # State derivative (phases derivative)
     dphases = np.zeros_like(phases)
-    for i in range(0, len(freqs)):
+
+    """ Aurélien's version: 
+    for i in range(len(freqs)):
         dphases[i] += 2 * np.pi * freqs[i]
         for j in range(0, len(freqs)):
-            dphases[i] += 1 * coupling_weights[i][j] * np.sin(phases[j] - phases[i] - phases_desired[i][j])
+            dphases[i] += 1 * coupling_weights[i][j] * np.sin(phases[j] - phases[i] - phases_desired[i][j]) """
+
+    for i in range(len(freqs)):
+        dphases[i] += 2 * np.pi * freqs[i]
+        for j in range(len(freqs)):
+            if i == j + 1 or  i == j - 1 or i == j + 10 or i == j - 10:
+                dphases[i] += r[j] * coupling_weights[i,j] * np.sin(phases[j] - phases[i] - phases_desired[i,j]) 
                       
     return dphases
 
@@ -32,7 +45,7 @@ def motor_output(phases_left, phases_right, amplitudes_left, amplitudes_right):
     """Motor output"""
     dmotor_output = np.zeros_like(amplitudes_left)
     for i in range(0, len(dmotor_output)):
-        dmotor_output[i] = amplitudes_left[i] * (1 + np.cos(amplitudes_left[i])) - amplitudes_right[i] * (1 + np.cos(amplitudes_right[i]))
+        dmotor_output[i] = amplitudes_left[i] * (1 + np.cos(phases_left[i])) - amplitudes_right[i] * (1 + np.cos(phases_right[i]))
     
     return dmotor_output
 
@@ -70,7 +83,7 @@ class PhaseEquation(ODESolver):
     def __init__(self, timestep, freqs, phase_lag):
         super(PhaseEquation, self).__init__(phases_ode, timestep, euler)
         self.n_joints = 10
-        self.phases = 1e-4*np.random.ranf(2*self.n_joints)
+        self.phases = 1e-4*np.random.ranf(2*self.n_joints) # shape (20,)
         self.freqs = np.zeros(2*self.n_joints)
         self.coupling_weights = np.zeros([2*self.n_joints, 2*self.n_joints])
         self.phases_desired = np.zeros([2*self.n_joints, 2*self.n_joints])     #size initialization
@@ -84,7 +97,7 @@ class PhaseEquation(ODESolver):
         # Set frequencies
         
         for i in range(0, len(self.freqs)):
-            self.freqs[i] = freqs
+            self.freqs[i] = freqs[i] # modified freqs to be an array
             for j in range(0, len(self.freqs)):
                 if i == j + 1:
                     self.coupling_weights[i][j] = 10
@@ -94,16 +107,16 @@ class PhaseEquation(ODESolver):
                     self.phases_desired[i][j] = -phase_lag
                 if i == j + 10:
                     self.coupling_weights[i][j] = 10
-                    self.phases_desired[i][j] = phase_lag
+                    self.phases_desired[i][j] = np.pi #phase_lag
                 if i == j - 10:
                     self.coupling_weights[i][j] = 10
-                    self.phases_desired[i][j] = -phase_lag
+                    self.phases_desired[i][j] = -np.pi #phase_lag
 
     def step(self):
         """Step"""
         self.phases += self.integrate(
-            self.phases,
-            self.freqs,
+            self.phases, # phases are the state
+            self.freqs,  # All remaining arguments are combined into *parameters
             self.coupling_weights,
             self.phases_desired
         )
@@ -113,8 +126,7 @@ class AmplitudeEquation(ODESolver):
     """Amplitude ODE equation"""
 
     def __init__(self, timestep, amplitudes, turn):
-        super(AmplitudeEquation, self).__init__(
-            amplitudes_ode, timestep, euler)
+        super(AmplitudeEquation, self).__init__(amplitudes_ode, timestep, euler)
         self.n_joints = 10
         self.amplitudes = np.zeros(2*self.n_joints)
         self.rates = np.zeros(2*self.n_joints)
@@ -124,12 +136,12 @@ class AmplitudeEquation(ODESolver):
     def set_parameters(self, amplitudes, turn):
         """Set parameters of the network"""
 
-        # Set convergence rates
+        # Set convergence rates ???????????
         # Set desired amplitudes
         
         for i in range(0, len(self.rates)):
-                self.rates[i] = 1
-                self.amplitudes_desired[i] = 1
+            self.rates[i] = 1
+            self.amplitudes_desired[i] = amplitudes[i]
         
 
     def step(self):

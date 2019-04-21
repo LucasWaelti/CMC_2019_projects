@@ -98,15 +98,21 @@ def main():
     world = Supervisor()
     n_joints = 10
     timestep = int(world.getBasicTimeStep())
-    freqs = 1
+    #freqs = 1
 
     # Get and control initial state of salamander
     reset = RobotResetControl(world, n_joints)
 
+    ''' Simulation setup '''
+    freqs = np.ones(20) # 20 amplitudes to be specified
+    amplitude = np.ones(20)/10 #[1, 1] # 20 amplitudes to be specified
+    phase_lag = 2*np.pi/10 # Single scalar
+    turn = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py
+
     # Simulation example
-    amplitude = None
-    phase_lag = None
-    turn = None
+    #amplitude = None
+    #phase_lag = None
+    #turn = None
     parameter_set = [
         [freqs, amplitude, phase_lag, turn],
         [freqs, amplitude, phase_lag, turn]

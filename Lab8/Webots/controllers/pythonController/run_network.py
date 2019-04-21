@@ -7,16 +7,25 @@ from network import SalamanderNetwork
 from save_figures import save_figures
 from parse_args import save_plots
 
+def plotLogData(time,log,what='phase',figure_name='log'):
+    _ = plt.figure()
+    plt.plot(time,log)
+    plt.title(figure_name)
+    plt.grid(True)
+    plt.xlabel("time [s]")
+    plt.ylabel(what)
+
 
 def main(plot=True):
     """Main - Run network without Webots and plot results"""
     # Simulation setup
     timestep = 1e-3
     times = np.arange(0, 2, timestep)
-    freqs = 1
-    amplitudes = [1, 1]
-    phase_lag = 2*np.pi/(10-1)
-    turn = 0
+    freqs = np.ones(20) # 20 amplitudes to be specified
+    amplitudes = np.ones(20) #[1, 1] # 20 amplitudes to be specified
+    phase_lag = 2*np.pi/10 # Single scalar
+    turn = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py 
+
     network = SalamanderNetwork(timestep, freqs, amplitudes, phase_lag, turn)
 
     # Logs
@@ -50,6 +59,10 @@ def main(plot=True):
         len(times),
         toc - tic
     ))
+
+    plotLogData(times,phases_log,what='phase',figure_name='phases_log')
+    plotLogData(times,amplitudes_log,what='amplitude',figure_name='amplitudes_log')
+    plotLogData(times,outputs_log,what='output',figure_name='outputs_log')
 
     # Show plots
     if plot:
