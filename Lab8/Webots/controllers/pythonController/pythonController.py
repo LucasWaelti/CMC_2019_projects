@@ -103,27 +103,58 @@ def main():
     # Get and control initial state of salamander
     reset = RobotResetControl(world, n_joints)
 
-    ''' Simulation setup '''
-    # Experiment 0
-    freqs1 = np.ones(20) # 20 amplitudes to be specified
-    amplitude1 = np.ones(20)/10 #[1, 1] # 20 amplitudes to be specified
-    phase_lag1 = 2*np.pi/10 # Single scalar
-    turn1 = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py
+    ''' Simulation setup - (choose an question to run)'''
 
-    # Experiment 1
-    freqs2 = np.ones(20)*2 # Higher frequency
-    amplitude2 = np.ones(20)/5 # Greater amplitude 
-    phase_lag2 = 2*np.pi/10 
-    turn2 = 0 
+    question = '8d' # 8a, 8b, 8c, 8d
 
-    # Simulation example
-    #amplitude = None
-    #phase_lag = None
-    #turn = None
-    parameter_set = [
-        [freqs1, amplitude1, phase_lag1, turn1],
-        [freqs2, amplitude2, phase_lag2, turn2]
-    ]
+    if question == '8a':
+        # Experiment 0
+        freqs1 = np.ones(20)        # 20 amplitudes to be specified
+        amplitude1 = [1/10,1/10]    # [Rhead,Rtail] (specify head and tail amplitude)
+        phase_lag1 = 2*np.pi/10     # Positive = forward, negative = backward
+        turn1 = 0                   # Positive = left, negative = right (must not be too large)
+
+        parameter_set = [
+            [freqs1, amplitude1, phase_lag1, turn1]
+        ]
+
+    elif question == '8b':
+        pass
+
+    elif question == '8c':
+        # Experiment 0
+        freqs0 = np.ones(20)
+        amplitude0 = [0,1/5]        # Linear distribution of amplitude
+        phase_lag0 = 2*np.pi/10 
+        turn0 = 0 
+        
+        parameter_set = [
+            [freqs0, amplitude0, phase_lag0, turn0] 
+        ]
+
+    elif question == '8d':
+        # Experiment 0
+        freqs0 = np.ones(20) 
+        amplitude0 = [0,1/5]        # Linear distribution of amplitude
+        phase_lag0 = -2*np.pi/10    # Swimming backward
+        turn0 = 0 
+
+        # Experiment 1
+        freqs1 = np.ones(20) 
+        amplitude1 = [0,1/5]        # Linear distribution of amplitude
+        phase_lag1 = 2*np.pi/10
+        turn1 = 0.1                 # turning left 
+        
+        parameter_set = [
+            [freqs0, amplitude0, phase_lag0, turn0],
+            [freqs1, amplitude1, phase_lag1, turn1]
+        ]
+
+    else:
+        parameter_set = [] 
+        print('ERROR - Invalid question selected')
+
+    # Store the data of the specified question
     for simulation_i, parameters in enumerate(parameter_set):
         reset.reset()
         run_simulation(
@@ -131,11 +162,12 @@ def main():
             parameters,
             timestep,
             int(1000*simulation_duration/timestep),
-            logs="./logs/example/simulation_{}.npz".format(simulation_i)
+            logs="./logs/" + question + "/simulation_{}.npz".format(simulation_i) #logs="./logs/example/simulation_{}.npz".format(simulation_i)
         )
 
     # Pause
     world.simulationSetMode(world.SIMULATION_MODE_PAUSE)
+    world.worldReload()
     pylog.info("Simulations complete")
     #world.simulationQuit(0)
 

@@ -22,7 +22,7 @@ def main(plot=True):
     timestep = 1e-3
     times = np.arange(0, 2, timestep)
     freqs = np.ones(20) # 20 amplitudes to be specified
-    amplitudes = np.ones(20) #[1, 1] # 20 amplitudes to be specified
+    amplitudes = [1,1]#np.ones(20) #[1, 1] # 20 amplitudes to be specified
     phase_lag = 2*np.pi/10 # Single scalar
     turn = 0 # Will be used to modify set_parameters from AmplitudeEquation in network.py 
 

@@ -139,10 +139,17 @@ class AmplitudeEquation(ODESolver):
 
         # Set convergence rates ???????????
         # Set desired amplitudes
+
+        # Amplitude contains now [Rhead,Rtail] - interpolate from 0 to 10 between those 2 values
+        slope = (amplitudes[1]-amplitudes[0])/9
+        offset = amplitudes[0]
         
         for i in range(0, len(self.rates)):
             self.rates[i] = 1
-            self.amplitudes_desired[i] = amplitudes[i]
+            if i >= 10:
+                self.amplitudes_desired[i] = slope*(i-10) + offset + turn #amplitudes[i]
+            else: 
+                self.amplitudes_desired[i] = slope*i + offset - turn 
         
 
     def step(self):
