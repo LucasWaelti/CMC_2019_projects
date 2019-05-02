@@ -40,21 +40,43 @@ class RobotParameters(dict):
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
-        pylog.warning("Coupling weights must be set")
+        #pylog.warning("Frequencies weights must be set")
+        self.freqs[:self.n_oscillators_body] = np.ones(self.n_oscillators_body) * parameters.freqs
+        #print(self.freqs)
 
     def set_coupling_weights(self, parameters):
         """Set coupling weights"""
-        pylog.warning("Coupling weights must be set")
+        for i in range(0, self.n_oscillators_body):
+            for j in range(0, self.n_oscillators_body):
+                if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
+                    self.coupling_weights[i][j] = parameters.couplingBody
+               
+        #pylog.warning("Coupling weights must be set")
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
-        pylog.warning("Phase bias must be set")
+        for i in range(0, self.n_oscillators_body):
+            for j in range(0, self.n_oscillators_body):
+                if (i == j + 1):
+                    self.phase_bias[i][j] = parameters.phase_lag
+                if (i == j - 1):
+                    self.phase_bias[i][j] = -parameters.phase_lag
+                if (i == j + 10):
+                    self.phase_bias[i][j] = np.pi
+                if (i == j - 10):
+                    self.phase_bias[i][j] = -np.pi
+        #pylog.warning("Phase bias must be set")
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
-        pylog.warning("Convergence rates must be set")
+        self.rates[:self.n_oscillators_body] = np.ones(self.n_oscillators_body) * parameters.rate
+        #pylog.warning("Convergence rates must be set")
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        pylog.warning("Nominal amplitudes must be set")
+        slope = parameters.amplitude_gradient[0]
+        offset = parameters.amplitude_gradient[1]
+        arr = np.array([slope * i + offset for i in range(0, self.n_body_joints)])
+        self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr))
+        #pylog.warning("Nominal amplitudes must be set")
 

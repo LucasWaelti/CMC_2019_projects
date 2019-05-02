@@ -18,6 +18,10 @@ class SimulationParameters(dict):
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...
+        self.freqs = 1
+        self.couplingBody = 10
+        self.rate = 1
         # Update object with provided keyword arguments
         self.update(kwargs)  # NOTE: This overrides the previous declarations
+        
 
