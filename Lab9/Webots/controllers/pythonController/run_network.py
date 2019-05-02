@@ -18,9 +18,12 @@ def run_network(duration, update=False, drive=0):
     n_iterations = len(times)
     parameters = SimulationParameters(
         drive=drive,
-        amplitude_gradient=None,
-        phase_lag=None,
+        amplitude_gradient=[1, 1],   #slope, offset
+        phase_lag=2*np.pi/10,
         turn=None,
+        freqs=1,
+        couplingBody=10,
+        rate=1
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)
@@ -73,9 +76,23 @@ def run_network(duration, update=False, drive=0):
     ))
 
     # Implement plots of network results
-    pylog.warning("Implement plots")
+    #pylog.warning("Implement plots")
+    plotLogData(times, phases_log, what='phase', figure_name='phase log')
+    plotLogData(times, amplitudes_log, what='amplitude', figure_name='amplitude log')
+    plotLogData(times, outputs_log, what='output', figure_name='output log')
+    
 
 
+
+def plotLogData(time,log,what='phase',figure_name='log'):
+    _ = plt.figure()
+    plt.plot(time,log)
+    plt.title(figure_name)
+    plt.grid(True)
+    plt.xlabel("time [s]")
+    plt.ylabel(what)
+    
+    
 def main(plot):
     """Main"""
 
