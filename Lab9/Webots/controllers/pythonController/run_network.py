@@ -20,11 +20,12 @@ def run_network(duration, update=False, drive=0):
     n_iterations = len(times)
     parameters = SimulationParameters(
         drive=drive,
-        amplitude_gradient=[1, 1],   #slope, offset
+        amplitude_gradient=[1, 1], # slope, offset
         phase_lag=2*np.pi/10,
         turn=None,
         freqs=1,
-        couplingBody=10,
+        couplingBody=10, 
+        couplingLeg=30,
         rate=1
     )
     network = SalamanderNetwork(timestep, parameters)
@@ -86,11 +87,13 @@ def run_network(duration, update=False, drive=0):
 
 def plotLogData(time,log,what='phase',figure_name='phase log'):
     _ = plt.figure()
-    plt.plot(time,log)
+    for i in range(log.shape[1]):
+        plt.plot(time,log[:,i],label=str(i))
     plt.title(figure_name)
     plt.grid(True)
     plt.xlabel("time [s]")
     plt.ylabel(what)
+    plt.legend() 
     
     
 def main(plot):

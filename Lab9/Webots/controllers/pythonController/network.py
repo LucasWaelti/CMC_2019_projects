@@ -15,25 +15,35 @@ def network_ode(_time, state, parameters):
     phases = state[:parameters.n_oscillators]
     amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
     
+    # Compute the state for the body
     dphases = np.zeros_like(phases)
-    for i in range(0, parameters.n_oscillators_body):
+    for i in range(0, parameters.n_oscillators):
         dphases[i] += 2 * np.pi * parameters.freqs[i]
-        for j in range(0, parameters.n_oscillators_body):
-            if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
-                dphases[i] += amplitudes[j] * parameters.coupling_weights[i][j] * np.sin(phases[j] - phases[i] - parameters.phase_bias[i][j])
+        for j in range(0, parameters.n_oscillators):
+            # Inter spline coupling
+            #if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
+            dphases[i] += amplitudes[j] * parameters.coupling_weights[i][j] * \
+                np.sin(phases[j] - phases[i] - parameters.phase_bias[i][j])
     
     damplitudes = np.zeros_like(amplitudes)
-    for i in range(0, parameters.n_oscillators_body):
+    for i in range(0, parameters.n_oscillators):
         damplitudes[i] = parameters.rates[i] * (parameters.nominal_amplitudes[i] - amplitudes[i])
-    
-    return  np.concatenate([dphases, damplitudes])
+
+    return np.concatenate([dphases, damplitudes])
 
 def motor_output(phases, amplitudes):
     """Motor output - q_i"""
-    n_body_joints = int(len(amplitudes) / 2)
-    motor_output = np.zeros(n_body_joints)
+    n_body_joints = int(len(amplitudes) / 2 - 2) # 10 
+    motor_output = np.zeros(int(len(amplitudes) / 2 + 2)) # 14
+
+    # For the spine
     for i in range(0, n_body_joints):
-        motor_output[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i + n_body_joints] * ( 1 + np.cos(phases[i + n_body_joints]))
+        motor_output[i] = amplitudes[i] * (1 + np.cos(phases[i])) \
+            - amplitudes[i + n_body_joints] * ( 1 + np.cos(phases[i + n_body_joints]))
+    
+    # For the legs 
+    for i in range(n_body_joints, n_body_joints + 4):
+        motor_output[i] =  amplitudes[i] * ( np.sin(phases[i]) )
     return motor_output
 
 

@@ -13,8 +13,8 @@ def exercise_example(world, timestep, reset):
         SimulationParameters(
             simulation_duration=10,
             drive=drive,
-            amplitudes=[1, 2, 3],
-            phase_lag=np.zeros(n_joints),
+            amplitudes=0.5, # [1, 2, 3],
+            phase_lag=np.pi/5,#np.zeros(n_joints),
             turn=0,
             # ...
         )

@@ -41,35 +41,73 @@ class RobotParameters(dict):
     def set_frequencies(self, parameters):
         """Set frequencies"""
         #pylog.warning("Frequencies weights must be set")
-        self.freqs[:self.n_oscillators_body] = np.ones(self.n_oscillators_body) * parameters.freqs
+        self.freqs[:self.n_oscillators] = np.ones(self.n_oscillators) * parameters.freqs
         #print(self.freqs)
 
     def set_coupling_weights(self, parameters):
-        """Set coupling weights"""
-        for i in range(0, self.n_oscillators_body):
-            for j in range(0, self.n_oscillators_body):
-                if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
-                    self.coupling_weights[i][j] = parameters.couplingBody
-               
+        """Set coupling weights - w_ij is coupling from j to i"""
+        # Reference table to identify the spine oscillators influenced by each leg
+        spine_index = [0,int(self.n_oscillators_body/2),
+                        int(self.n_oscillators_body/4),
+                        int(3*self.n_oscillators_body/4)]
+
+        for i in range(0, self.n_oscillators):
+            for j in range(0, self.n_oscillators): 
+                if i < self.n_oscillators_body and i < self.n_oscillators_body:
+                    # Compute the couplings within the spine only
+                    if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
+                        self.coupling_weights[i][j] = parameters.couplingBody
+                else:
+                    # Compute the couplings between the legs and the spine 
+                    if i >= self.n_oscillators_body and j >= self.n_oscillators_body:
+                        # both i and j are legs - same weight as body coupling 
+                        # Only indluenced by other legs, except the one on the diagonal
+                        legi = i - self.n_oscillators_body 
+                        legj = j - self.n_oscillators_body # express the legs between 0 and 3
+
+                        if (legi == 0 or legi == 3) and (legj == 1 or legj == 2):
+                            self.coupling_weights[i][j] = parameters.couplingBody 
+                        elif (legi == 1 or legi == 2) and (legj == 0 or legj == 3):
+                            self.coupling_weights[i][j] = parameters.couplingBody 
+                    
+                    # Case where only i represents a leg has no effect
+                     
+                    elif i < self.n_oscillators_body and j >= self.n_oscillators_body:
+                        # only j represents a leg, i is a spine oscillator 
+                        legj = j - self.n_oscillators_body
+                        if i in range(spine_index[legj], spine_index[legj] + self.n_oscillators_body/4):
+                            self.coupling_weights[i][j] = parameters.couplingLeg 
+        
         #pylog.warning("Coupling weights must be set")
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
         for i in range(0, self.n_oscillators_body):
             for j in range(0, self.n_oscillators_body):
-                if (i == j + 1):
-                    self.phase_bias[i][j] = parameters.phase_lag
-                if (i == j - 1):
-                    self.phase_bias[i][j] = -parameters.phase_lag
-                if (i == j + 10):
-                    self.phase_bias[i][j] = np.pi
-                if (i == j - 10):
-                    self.phase_bias[i][j] = -np.pi
+                if i >= self.n_oscillators_body and j >= self.n_oscillators_body: 
+                    # Compute inter leg phases 
+                    legi = i - self.n_oscillators_body 
+                    legj = j - self.n_oscillators_body # express the legs between 0 and 3
+
+                    if (legi == 0 or legi == 3) and (legj == 1 or legj == 2):
+                        self.phase_bias[i][j] = np.pi 
+                    elif (legi == 1 or legi == 2) and (legj == 0 or legj == 3):
+                        self.phase_bias[i][j] = np.pi  
+                else:
+                    # Compute phases within the spine 
+                    if (i == j + 1):
+                        self.phase_bias[i][j] = parameters.phase_lag
+                    if (i == j - 1):
+                        self.phase_bias[i][j] = -parameters.phase_lag
+                    if (i == j + 10):
+                        self.phase_bias[i][j] = np.pi
+                    if (i == j - 10):
+                        self.phase_bias[i][j] = -np.pi
         #pylog.warning("Phase bias must be set")
 
     def set_amplitudes_rate(self, parameters):
-        """Set amplitude rates"""
-        self.rates[:self.n_oscillators_body] = np.ones(self.n_oscillators_body) * parameters.rate
+        """Set amplitude rates - a"""
+        self.rates[:self.n_oscillators] = np.ones(self.n_oscillators) * parameters.rate
         #pylog.warning("Convergence rates must be set")
 
     def set_nominal_amplitudes(self, parameters):
@@ -78,5 +116,7 @@ class RobotParameters(dict):
         offset = parameters.amplitude_gradient[1]
         arr = np.array([slope * i + offset for i in range(0, self.n_body_joints)])
         self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr))
+        # Constant amplitude of legs oscillations 
+        self.nominal_amplitudes[self.n_oscillators_body:self.n_oscillators] = np.ones(self.n_legs_joints) 
         #pylog.warning("Nominal amplitudes must be set")
 
