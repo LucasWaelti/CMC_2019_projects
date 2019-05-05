@@ -9,6 +9,8 @@ from save_figures import save_figures
 from parse_args import save_plots
 from simulation_parameters import SimulationParameters
 
+import plot_results 
+
 
 def run_network(duration, update=False, drive=0):
     """Run network without Webots and plot results"""
@@ -80,11 +82,9 @@ def run_network(duration, update=False, drive=0):
     plotLogData(times, phases_log, what='phase', figure_name='phase log')
     plotLogData(times, amplitudes_log, what='amplitude', figure_name='amplitude log')
     plotLogData(times, outputs_log, what='output', figure_name='output log')
-    
 
 
-
-def plotLogData(time,log,what='phase',figure_name='log'):
+def plotLogData(time,log,what='phase',figure_name='phase log'):
     _ = plt.figure()
     plt.plot(time,log)
     plt.title(figure_name)
