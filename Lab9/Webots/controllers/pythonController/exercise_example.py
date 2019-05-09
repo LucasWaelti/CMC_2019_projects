@@ -9,11 +9,11 @@ def exercise_example(world, timestep, reset):
     """Exercise example"""
     # Parameters
     n_joints = 10
-    parameter_set = [
+    """parameter_set = [
         SimulationParameters(
             simulation_duration=10,
             drive=drive,
-            amplitudes=0.5, # [1, 2, 3],
+            amplitude_gradient=[0.05, 0.02], # [1, 2, 3],
             phase_lag=np.pi/5,#np.zeros(n_joints),
             turn=0,
             # ...
@@ -21,7 +21,17 @@ def exercise_example(world, timestep, reset):
         for drive in np.linspace(1, 2, 2)
         # for amplitudes in ...
         # for ...
-    ]
+    ]"""
+    parameter_set = [SimulationParameters(
+        drive=4,
+        amplitude=0.005, # slope, offset
+        phase_lag=2*np.pi/10,
+        turn=None,
+        freqs=1,
+        couplingBody=10, 
+        couplingLeg=30,
+        rate=1
+    )]
 
     # Grid search
     for simulation_i, parameters in enumerate(parameter_set):

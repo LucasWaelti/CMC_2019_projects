@@ -43,7 +43,10 @@ def motor_output(phases, amplitudes):
     
     # For the legs 
     for i in range(n_body_joints, n_body_joints + 4):
-        motor_output[i] =  amplitudes[i] * ( np.sin(phases[i]) )
+        if (amplitudes[10+i] > 0.001):
+            motor_output[i] =  -phases[i]
+        else:
+            motor_output[i] = 0
     return motor_output
 
 

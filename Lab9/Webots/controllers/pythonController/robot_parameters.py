@@ -41,8 +41,18 @@ class RobotParameters(dict):
     def set_frequencies(self, parameters):
         """Set frequencies"""
         #pylog.warning("Frequencies weights must be set")
-        self.freqs[:self.n_oscillators] = np.ones(self.n_oscillators) * parameters.freqs
-        #print(self.freqs)
+        #self.freqs[:self.n_oscillators] = np.ones(self.n_oscillators) * parameters.freqs
+        d = parameters.drive
+        if (d <= parameters.dBody[1] and d >= parameters.dBody[0]):
+            self.freqs[:self.n_oscillators_body] = parameters.cVBody[0] * parameters.drive + parameters.cVBody[1]
+        else:
+            self.freqs[:self.n_oscillators_body] = parameters.vSat
+        if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
+            self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.cVLimb[0] * parameters.drive + \
+                parameters.cVLimb[1]
+        else:
+            self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.vSat
+        print(self.freqs)
 
     def set_coupling_weights(self, parameters):
         """Set coupling weights - w_ij is coupling from j to i"""
@@ -112,11 +122,21 @@ class RobotParameters(dict):
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        slope = parameters.amplitude_gradient[0]
-        offset = parameters.amplitude_gradient[1]
-        arr = np.array([slope * i + offset for i in range(0, self.n_body_joints)])
-        self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr))
+        d = parameters.drive
+        slope = parameters.amplitude
+        if (d <= parameters.dBody[1] and d >= parameters.dBody[0]):
+            offsetBody = parameters.cRBody[0] * parameters.drive + parameters.cRBody[1]
+            arr = np.array([slope * i + offsetBody for i in range(0, self.n_body_joints)])
+            self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr))
+        else:
+            self.nominal_amplitudes[:self.n_oscillators_body] = 0
+        if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
+            offsetLimb = parameters.cRLimb[0] * parameters.drive + parameters.cRLimb[1]
+        else:
+            offsetLimb = parameters.RSat
+        
         # Constant amplitude of legs oscillations 
-        self.nominal_amplitudes[self.n_oscillators_body:self.n_oscillators] = np.ones(self.n_legs_joints) 
+        self.nominal_amplitudes[self.n_oscillators_body:self.n_oscillators] = np.ones(self.n_legs_joints) * offsetLimb
+        print(self.nominal_amplitudes)
         #pylog.warning("Nominal amplitudes must be set")
 
