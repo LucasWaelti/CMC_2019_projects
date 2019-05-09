@@ -47,6 +47,7 @@ class RobotParameters(dict):
             self.freqs[:self.n_oscillators_body] = parameters.cVBody[0] * parameters.drive + parameters.cVBody[1]
         else:
             self.freqs[:self.n_oscillators_body] = parameters.vSat
+        
         if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
             self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.cVLimb[0] * parameters.drive + \
                 parameters.cVLimb[1]
@@ -63,11 +64,11 @@ class RobotParameters(dict):
 
         for i in range(0, self.n_oscillators):
             for j in range(0, self.n_oscillators): 
-                if i < self.n_oscillators_body and i < self.n_oscillators_body:
+                if i < self.n_oscillators_body and j < self.n_oscillators_body:
                     # Compute the couplings within the spine only
                     if (i == j + 1) or (i == j - 1) or (i == j + 10) or (i == j - 10):
                         self.coupling_weights[i][j] = parameters.couplingBody
-                else:
+                else: 
                     # Compute the couplings between the legs and the spine 
                     if i >= self.n_oscillators_body and j >= self.n_oscillators_body:
                         # both i and j are legs - same weight as body coupling 
@@ -85,15 +86,24 @@ class RobotParameters(dict):
                     elif i < self.n_oscillators_body and j >= self.n_oscillators_body:
                         # only j represents a leg, i is a spine oscillator 
                         legj = j - self.n_oscillators_body
-                        if i in range(spine_index[legj], spine_index[legj] + self.n_oscillators_body/4):
+                        if i in range(int(spine_index[legj]), int(spine_index[legj] + self.n_oscillators_body/4)):
                             self.coupling_weights[i][j] = parameters.couplingLeg 
         
+        # Store the coupling weights in a file for visualization 
+        with open('coupling.txt','w') as file:
+            for i in range(self.coupling_weights.shape[0]):
+                for j in range(self.coupling_weights.shape[1]):
+                    if self.coupling_weights[i,j] == 0:
+                        file.write('. ' )
+                    else:
+                        file.write( '%.0f'%(self.coupling_weights[i,j]) + ' ' )
+                file.write('\n') 
         #pylog.warning("Coupling weights must be set")
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
-        for i in range(0, self.n_oscillators_body):
-            for j in range(0, self.n_oscillators_body):
+        for i in range(0, self.n_oscillators):
+            for j in range(0, self.n_oscillators):
                 if i >= self.n_oscillators_body and j >= self.n_oscillators_body: 
                     # Compute inter leg phases 
                     legi = i - self.n_oscillators_body 
@@ -103,7 +113,8 @@ class RobotParameters(dict):
                         self.phase_bias[i][j] = np.pi 
                     elif (legi == 1 or legi == 2) and (legj == 0 or legj == 3):
                         self.phase_bias[i][j] = np.pi  
-                else:
+                    
+                elif i < self.n_oscillators_body and j < self.n_oscillators_body:
                     # Compute phases within the spine 
                     if (i == j + 1):
                         self.phase_bias[i][j] = parameters.phase_lag
@@ -113,6 +124,16 @@ class RobotParameters(dict):
                         self.phase_bias[i][j] = np.pi
                     if (i == j - 10):
                         self.phase_bias[i][j] = -np.pi
+        
+        # Store the phase bias in a file for visualization 
+        with open('phase_bias.txt','w') as file:
+            for i in range(self.phase_bias.shape[0]):
+                for j in range(self.phase_bias.shape[1]):
+                    if self.phase_bias[i,j] == 0:
+                        file.write('. ' )
+                    else:
+                        file.write( '%.0f'%(self.phase_bias[i,j]) + ' ' )
+                file.write('\n') 
         #pylog.warning("Phase bias must be set")
 
     def set_amplitudes_rate(self, parameters):

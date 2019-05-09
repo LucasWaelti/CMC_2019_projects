@@ -18,19 +18,18 @@ class SimulationParameters(dict):
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...
-        self.freqs = 1
         self.couplingBody = 10
         self.couplingLeg = 30
         self.rate = 20
         self.dBody = [1, 5]
         self.dLimb = [1, 3]
         self.cVBody = [0.2, 0.3]
-        self.cVLimb = [0.2, 0.0]
-        self.cRBody = [0.0065, 0.05]
+        self.cVLimb = [0.2, 0.0]        # [0.2, 0.0] originally 
+        self.cRBody = [0.0065, 0.05]    # [0.065, 0.196] originally 
         self.cRLimb = [0.131, 0.131]
         self.vSat = 0
         self.RSat = 0
-        self.turn = 0 # between -1 and 1
+        self.turn = 0 # between -1 (left) and 1 (right)
         self.drive = 0
         # Update object with provided keyword arguments
         self.update(kwargs)  # NOTE: This overrides the previous declarations

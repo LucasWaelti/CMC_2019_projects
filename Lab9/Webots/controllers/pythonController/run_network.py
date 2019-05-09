@@ -20,13 +20,12 @@ def run_network(duration, update=False, drive=0):
     n_iterations = len(times)
     parameters = SimulationParameters(
         drive=2.5,
-        amplitude=0.05, # slope, offset
-        phase_lag=2*np.pi/10,
+        amplitude=0.01, # slope 
+        phase_lag=2*np.pi/8,
         turn=None,
-        freqs=1,
         couplingBody=10, 
         couplingLeg=30,
-        rate=1
+        rate=20
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)

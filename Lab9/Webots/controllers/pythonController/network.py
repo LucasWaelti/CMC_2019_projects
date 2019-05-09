@@ -15,7 +15,7 @@ def network_ode(_time, state, parameters):
     phases = state[:parameters.n_oscillators]
     amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
     
-    # Compute the state for the body
+    # Compute the state 
     dphases = np.zeros_like(phases)
     for i in range(0, parameters.n_oscillators):
         dphases[i] += 2 * np.pi * parameters.freqs[i]
@@ -44,7 +44,8 @@ def motor_output(phases, amplitudes):
     # For the legs 
     for i in range(n_body_joints, n_body_joints + 4):
         if (amplitudes[10+i] > 0.001):
-            motor_output[i] =  -phases[i]
+            motor_output[i] = -phases[i] 
+            #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i])) # NOTE - comment this when done debugging 
         else:
             motor_output[i] = 0
     return motor_output
