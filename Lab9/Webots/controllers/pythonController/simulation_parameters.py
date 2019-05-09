@@ -14,7 +14,7 @@ class SimulationParameters(dict):
         self.n_legs_joints = 4
         self.simulation_duration = 30
         self.phase_lag = 0
-        self.amplitude = 0.05
+        self.amplitude = [0.05, 0.0] # slope, offset 
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...

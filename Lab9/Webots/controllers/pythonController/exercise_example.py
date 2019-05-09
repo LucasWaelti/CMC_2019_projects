@@ -23,8 +23,8 @@ def exercise_example(world, timestep, reset):
         # for ...
     ]"""
     parameter_set = [SimulationParameters(
-        drive=2.5,
-        amplitude=0.001, # slope
+        drive=5,
+        amplitude=[0.08,0.3], # head, tail 
         phase_lag=2*np.pi/10,
         turn=None,
         couplingBody=10, 
