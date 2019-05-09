@@ -44,8 +44,13 @@ def motor_output(phases, amplitudes):
     # For the legs 
     for i in range(n_body_joints, n_body_joints + 4):
         if (amplitudes[10+i] > 0.001):
-            motor_output[i] = -phases[i] 
-            #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i])) # NOTE - comment this when done debugging 
+            # TODO - avoid hardcoding this! Should not require explicit offset like this!! Bad! 
+            if i == 11 or i == 12:
+                motor_output[i] = -phases[i] + np.pi
+                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i] + np.pi)) # NOTE - comment this when done debugging 
+            else:
+                motor_output[i] = -phases[i] 
+                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i])) # NOTE - comment this when done debugging 
         else:
             motor_output[i] = 0
     return motor_output

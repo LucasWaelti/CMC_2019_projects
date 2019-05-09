@@ -23,13 +23,14 @@ def exercise_example(world, timestep, reset):
         # for ...
     ]"""
     parameter_set = [SimulationParameters(
-        drive=2,
-        amplitude=0.01, # slope, offset
+        drive=2.5,
+        amplitude=0.001, # slope
         phase_lag=2*np.pi/10,
         turn=None,
         couplingBody=10, 
         couplingLeg=30,
-        rate=20
+        rate=20,
+        cRBody = [0.025, 0.005]
     )]
 
     # Grid search

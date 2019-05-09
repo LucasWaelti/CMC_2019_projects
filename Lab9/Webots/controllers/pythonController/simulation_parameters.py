@@ -25,7 +25,7 @@ class SimulationParameters(dict):
         self.dLimb = [1, 3]
         self.cVBody = [0.2, 0.3]
         self.cVLimb = [0.2, 0.0]        # [0.2, 0.0] originally 
-        self.cRBody = [0.0065, 0.05]    # [0.065, 0.196] originally 
+        self.cRBody = [0.065, 0.005]    # [0.065, 0.196] originally 
         self.cRLimb = [0.131, 0.131]
         self.vSat = 0
         self.RSat = 0
