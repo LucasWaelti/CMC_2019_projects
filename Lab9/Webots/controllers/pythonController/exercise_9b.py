@@ -9,7 +9,7 @@ import plot_results
 def get_search_space():
     num_trials = 5
     amplitudes = np.linspace(0.05, 0.2, num=num_trials) 
-    phase_lags = np.linspace(0.1,2,num=num_trials)  
+    phase_lags = np.linspace(0.01,2,num=num_trials)  
     return num_trials,amplitudes,phase_lags 
 
 def exercise_9b(world, timestep, reset):
