@@ -20,7 +20,7 @@ def run_network(duration, update=False, drive=0):
     n_iterations = len(times)
     parameters = SimulationParameters(
         drive=2.5,
-        amplitude=[0.01,0.0], # slope 
+        amplitude=[0.01,0.1], # head, tail 
         phase_lag=2*np.pi/8,
         turn=None,
         couplingBody=10, 

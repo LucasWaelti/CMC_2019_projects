@@ -124,7 +124,7 @@ class SalamanderNetwork(ODESolver):
             solver=rk4  # Feel free to switch between Euler (euler) or
                         # Runge-Kutta (rk4) integration methods
         )
-        # States
+        # States 
         self.state = RobotState.salamandra_robotica_2()
         # Parameters
         self.parameters = RobotParameters(parameters)
@@ -134,6 +134,7 @@ class SalamanderNetwork(ODESolver):
     def step(self):
         """Step"""
         self.state += self.integrate(self.state, self.parameters)
+        return self.state 
 
     def get_motor_position_output(self):
         """Get motor position"""

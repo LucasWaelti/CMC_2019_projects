@@ -53,7 +53,7 @@ class SalamanderCMC(object):
         # Logging
         self.log = ExperimentLogger(
             n_iterations,
-            n_links=1,
+            n_links=10,
             n_joints=self.N_BODY_JOINTS,
             filename=logs,
             timestep=1e-3*timestep,
@@ -89,6 +89,15 @@ class SalamanderCMC(object):
                 self.iteration, i,
                 motor.getTorqueFeedback()
             )
+            # TODO - add network outputs logging 
+            self.log.log_network_state(
+                self.iteration, 
+                self.network.state
+            )
+            self.log.log_network_output(
+                self.iteration,
+                self.network.get_motor_position_output()
+            ) 
 
     def step(self):
         """Step"""

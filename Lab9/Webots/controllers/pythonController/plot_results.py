@@ -72,17 +72,34 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar = plt.colorbar()
     cbar.set_label(labels[2])
 
+def plot_simulation(path='logs/example/simulation_0.npz'):
+    # Load data
+    with np.load(path) as data:
+        print('Loaded data:',data)
+        timestep = float(data["timestep"])
+        links = data["links"]#[:, 0, :]
+        joints = data["joints"]
+        network = data["network"]
+        network_state = data["network_state"]
+        network_output = data["network_output"]
+    times = np.arange(0, timestep*np.shape(links)[0], timestep)
+    print('Links:',links.shape)
+    print('joints:',joints.shape) 
+    print('network:',network.shape) 
+    print('network_state:',network_state.shape) 
+    print('network_output:',network_output.shape) 
 
 def main(plot=True, path='logs/example/simulation_0.npz'):
     """Main"""
     # Load data
     with np.load(path) as data:
+        print('Loaded data:',data)
         timestep = float(data["timestep"])
         amplitude = data["amplitudes"]
         phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep) 
 
     # Plot data
     plt.figure("Positions")
