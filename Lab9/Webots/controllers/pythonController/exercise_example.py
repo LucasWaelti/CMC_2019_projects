@@ -47,5 +47,5 @@ def exercise_example(world, timestep, reset):
             int(1000*parameters.simulation_duration/timestep),
             logs="./logs/example/simulation_{}.npz".format(simulation_i)
         )
-        plot_results.plot_simulation(path="./logs/example/simulation_{}.npz".format(simulation_i)) 
+        plot_results.plot_simulation(plot=True, path="./logs/example/simulation_{}.npz".format(simulation_i)) 
 

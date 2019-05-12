@@ -23,14 +23,14 @@ class ExperimentLogger(object):
         self.links = np.zeros([n_iterations, n_links, 3], dtype=self.DTYPE)
         # Joints: Log position, velocity, command, torque, torque_fb, output
         self.joints = np.zeros([n_iterations, n_joints, 6], dtype=self.DTYPE)
-        # Network: Log phases, amplitudes, outputs - UNUSED 
+        # Network: Log phases, amplitudes, outputs - NOTE: UNUSED 
         self.network = np.zeros(
             [n_iterations, 2*n_joints, 3],
             dtype=self.DTYPE
         )
-        # NOTE - Network's state (48 values: 24 phases + 24 amplitudes)
+        # Network's state (48 values: 24 phases + 24 amplitudes)
         self.network_state = np.zeros([n_iterations, 2*(2*n_joints+4)], dtype=self.DTYPE)
-        # NOTE - Network's output
+        # Network's output
         self.network_output= np.zeros([n_iterations, n_joints+4], dtype=self.DTYPE)
         # Parameters
         self.parameters = kwargs
@@ -65,7 +65,7 @@ class ExperimentLogger(object):
         """Log joint output"""
         self.joints[iteration, joint, self.ID_J["output"]] = output
 
-    # TODO - add network logging
+    # add network logging
     def log_network_state(self, iteration, state):
         """Log network's state"""
         self.network_state[iteration,:] = state 
