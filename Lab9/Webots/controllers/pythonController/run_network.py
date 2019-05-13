@@ -25,7 +25,8 @@ def run_network(duration, update=False, drive=0):
         turn=None,
         couplingBody=10, 
         couplingLeg=30,
-        rate=20
+        rate=20, 
+        limb_spine_phase_lag=1
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)

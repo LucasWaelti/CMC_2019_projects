@@ -103,6 +103,11 @@ class RobotParameters(dict):
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
+
+        spine_index = [0,int(self.n_oscillators_body/2),
+                        int(self.n_oscillators_body/4),
+                        int(3*self.n_oscillators_body/4)]
+
         for i in range(0, self.n_oscillators):
             for j in range(0, self.n_oscillators):
                 if i >= self.n_oscillators_body and j >= self.n_oscillators_body: 
@@ -125,6 +130,12 @@ class RobotParameters(dict):
                         self.phase_bias[i][j] = np.pi
                     if (i == j - 10):
                         self.phase_bias[i][j] = -np.pi
+                
+                elif i < self.n_oscillators_body and j >= self.n_oscillators_body:
+                    # Compute the phase between the legs (j) and the spine (i)
+                    legj = j - self.n_oscillators_body
+                    if i in range(int(spine_index[legj]), int(spine_index[legj] + self.n_oscillators_body/4)):
+                        self.phase_bias[i][j] = parameters.limb_spine_phase_lag
         
         # Store the phase bias in a file for visualization 
         with open('phase_bias.txt','w') as file:

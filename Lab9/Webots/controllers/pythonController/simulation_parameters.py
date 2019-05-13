@@ -18,7 +18,7 @@ class SimulationParameters(dict):
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...
-        self.limb_spine_phase_lag = 0
+        self.limb_spine_phase_lag = 0 # phase between the legs and the spine 
         self.couplingBody = 10
         self.couplingLeg = 30
         self.rate = 20
