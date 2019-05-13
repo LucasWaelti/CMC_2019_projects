@@ -28,6 +28,7 @@ class RobotParameters(dict):
         self.phase_bias = np.zeros([self.n_oscillators, self.n_oscillators]) # 24 x 24
         self.rates = np.zeros(self.n_oscillators) # 24 
         self.nominal_amplitudes = np.zeros(self.n_oscillators) # 24 
+        self.turn = parameters.turn # between -1 (left) and 1 (right)
         self.update(parameters)
 
     def update(self, parameters):
@@ -156,7 +157,10 @@ class RobotParameters(dict):
             self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr)) 
         else:
             self.nominal_amplitudes[:self.n_oscillators_body] = 0
-
+        if self.turn is not None and self.turn >= -1 and self.turn <= 1:
+            # Apply turning
+            self.nominal_amplitudes[:int(self.n_oscillators_body/2)] *= (1+self.turn)
+            self.nominal_amplitudes[int(self.n_oscillators_body/2):self.n_oscillators_body] *= (1-self.turn)
         # Compute amplitudes for the legs 
         if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
             offsetLimb = parameters.cRLimb[0] * parameters.drive + parameters.cRLimb[1]
