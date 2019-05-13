@@ -29,9 +29,9 @@ class ExperimentLogger(object):
             dtype=self.DTYPE
         )
         # Network's state (48 values: 24 phases + 24 amplitudes)
-        self.network_state = np.zeros([n_iterations, 2*(2*n_joints+4)], dtype=self.DTYPE)
+        self.network_state = np.zeros([n_iterations, 48], dtype=self.DTYPE)
         # Network's output
-        self.network_output= np.zeros([n_iterations, n_joints+4], dtype=self.DTYPE)
+        self.network_output= np.zeros([n_iterations, 10+4], dtype=self.DTYPE)
         # Parameters
         self.parameters = kwargs
         # Filename
