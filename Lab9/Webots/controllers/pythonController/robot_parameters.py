@@ -157,7 +157,7 @@ class RobotParameters(dict):
             self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr)) 
         else:
             self.nominal_amplitudes[:self.n_oscillators_body] = 0
-        if self.turn is not None and self.turn >= -1 and self.turn <= 1:
+        if self.turn is not None and self.turn >= -1 and self.turn <= 1: 
             # Apply turning
             self.nominal_amplitudes[:int(self.n_oscillators_body/2)] *= (1+self.turn)
             self.nominal_amplitudes[int(self.n_oscillators_body/2):self.n_oscillators_body] *= (1-self.turn)
