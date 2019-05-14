@@ -19,7 +19,7 @@ def exercise_9f(world, timestep, reset):
     '''
         Choose which grid search to run 
     '''
-    #exercise_9f1(world, timestep, reset)
+    exercise_9f1(world, timestep, reset)
     exercise_9f2(world, timestep, reset)
 
 def exercise_9f1(world, timestep, reset):
@@ -59,6 +59,53 @@ def exercise_9f1(world, timestep, reset):
             logs="./logs/9f1/simulation_{}.npz".format(i) 
         )
 
+def compute_speed_9f1():
+    n_joints = 10
+
+    _,phase_set = get_phase_search_space() 
+
+    max_speed = []
+    max_distance = []
+    speed_labels = ['Rhead','Rtail','speed'] 
+
+    for simulation_i,phase in enumerate(phase_set):
+        # Load data
+        with np.load("./logs/9f1/simulation_{}.npz".format(simulation_i)) as data:
+            # Load stored data
+            timestep = float(data["timestep"])
+            link_data = data["links"][:, 0, :] # Only get the head position 
+            joints = data["joints"] # (position, velocity, command, torque, torque_fb, output)
+
+            # Compute the speed
+            speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
+            max_speed.append([phase,np.max(speed[:,0],axis=0)]) # np.mean(speed[:,0],axis=0)
+            max_distance.append([phase,link_data[-1,0]])
+
+    max_speed = np.array(max_speed)
+    max_distance = np.array(max_distance)
+
+    plt.figure()
+    plt.title('Top speed for different limb spine phase lags')
+    plt.plot(max_speed[:,0],max_speed[:,1],label='Max speed [m/s]')
+    plt.xlabel('Phase lag [rad]')
+    plt.ylabel('Top speed [m/s]') 
+    plt.legend() 
+    plt.tight_layout()
+    plt.grid()
+    plt.savefig("./logs/9f1/speed.jpg")
+
+    plt.figure()
+    plt.title('Max distance for different limb spine phase lags')
+    plt.plot(max_distance[:,0],max_distance[:,1]-link_data[0,0],label='Max distance reached [m]')
+    plt.xlabel('Phase lag [rad]')
+    plt.ylabel('Reached distance [m]') 
+    plt.legend() 
+    plt.tight_layout()
+    plt.grid()
+    plt.savefig("./logs/9f1/distance.jpg") 
+
+    plt.show() 
+
 
 def exercise_9f2(world, timestep, reset):
     """Exercise 9f"""
@@ -71,8 +118,7 @@ def exercise_9f2(world, timestep, reset):
 
         -> Set nominal radius to best value found previously. 
         -> show plot showing the effect of the amplitude. 
-    '''
-    # TODO 
+    ''' 
     # Parameters
     n_joints = 10
     _, amplitudes = get_amplitude_search_space()
@@ -97,38 +143,6 @@ def exercise_9f2(world, timestep, reset):
             logs="./logs/9f2/simulation_{}.npz".format(i) 
         )
 
-    
-
-
-def compute_speed_9f1():
-    n_joints = 10
-
-    _,phase_set = get_phase_search_space() 
-
-    max_speed = []
-    speed_labels = ['Rhead','Rtail','speed'] 
-
-    for simulation_i,phase in enumerate(phase_set):
-        # Load data
-        with np.load("./logs/9f1/simulation_{}.npz".format(simulation_i)) as data:
-            # Load stored data
-            timestep = float(data["timestep"])
-            link_data = data["links"][:, 0, :] # Only get the head position 
-            joints = data["joints"] # (position, velocity, command, torque, torque_fb, output)
-
-            # Compute the speed
-            speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
-            max_speed.append([phase,np.max(speed[:,0],axis=0)]) # np.mean(speed[:,0],axis=0)
-
-    max_speed = np.array(max_speed)
-    plt.figure()
-    plt.title('Speed for different limb spine phase lags')
-    plt.plot(max_speed[:,0],max_speed[:,1])
-    plt.xlabel('Phase lag [rad]')
-    plt.ylabel('Top speed [m/s]') 
-    plt.savefig("./logs/9f1/speed.jpg") 
-    plt.tight_layout()
-    plt.show() 
 
 def compute_speed_9f2():
     n_joints = 10
@@ -136,6 +150,7 @@ def compute_speed_9f2():
     _,amplitudes = get_amplitude_search_space() 
 
     max_speed = []
+    max_distance = []
 
     for simulation_i,amplitude in enumerate(amplitudes):
         # Load data
@@ -148,17 +163,33 @@ def compute_speed_9f2():
             # Compute the speed
             speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
             max_speed.append([amplitude,np.max(speed[:,0],axis=0)]) # np.mean(speed[:,0],axis=0)
+            max_distance.append([amplitude,link_data[-1,0]])
 
     max_speed = np.array(max_speed)
+    max_distance = np.array(max_distance)
+
     plt.figure()
-    plt.title('Speed for different amplitudes')
-    plt.plot(max_speed[:,0],max_speed[:,1])
-    plt.xlabel('amplitude [rad]')
+    plt.title('Top speed for different spine amplitudes')
+    plt.plot(max_speed[:,0],max_speed[:,1],label='Max speed [m/s]')
+    plt.xlabel('Amplitude [rad]')
     plt.ylabel('Top speed [m/s]') 
-    plt.savefig("./logs/9f2/speed.jpg") 
+    plt.legend() 
     plt.tight_layout()
+    plt.grid()
+    plt.savefig("./logs/9f2/speed.jpg")
+
+    plt.figure()
+    plt.title('Max distance for different spine amplitudes')
+    plt.plot(max_distance[:,0],max_distance[:,1]-link_data[0,0],label='Max distance reached [m]')
+    plt.xlabel('Amplitude [rad]')
+    plt.ylabel('Reached distance [m]') 
+    plt.legend() 
+    plt.tight_layout()
+    plt.grid()
+    plt.savefig("./logs/9f2/distance.jpg") 
+
     plt.show() 
 
 if __name__ == "__main__":
-    #compute_speed_9f1() 
+    compute_speed_9f1() 
     compute_speed_9f2() 

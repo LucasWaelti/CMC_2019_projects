@@ -24,15 +24,15 @@ def exercise_example(world, timestep, reset):
         # for ...
     ]"""
     parameter_set = [SimulationParameters(
-        drive=drive,
-        amplitude=[0.08,0.2], # head, tail 
-        phase_lag=2*np.pi/10,
-        turn=None,
+        drive=2.5,
+        amplitude=[0.15,0.15], # head, tail 
+        phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body
+        turn=None, 
         couplingBody=10, 
         couplingLeg=30,
         rate=20,
-        cRBody = [0.025, 0.005],
-        simulation_duration = 1
+        simulation_duration = 10,
+        limb_spine_phase_lag=0
         )
         for drive in [2.5,5] # Implement walking and swimming 
     ]

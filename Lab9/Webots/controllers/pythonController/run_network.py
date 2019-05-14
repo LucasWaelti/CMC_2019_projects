@@ -26,7 +26,7 @@ def run_network(duration, update=False, drive=0):
         couplingBody=10, 
         couplingLeg=30,
         rate=20, 
-        limb_spine_phase_lag=0
+        limb_spine_phase_lag=1 
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)
@@ -82,7 +82,7 @@ def run_network(duration, update=False, drive=0):
     #pylog.warning("Implement plots")
     plotLogData(times, phases_log, what='phase', figure_name='phase log')
     plotLogData(times, amplitudes_log, what='amplitude', figure_name='amplitude log')
-    plotLogData(times, outputs_log[:,0:10], what='output', figure_name='output log')
+    plotLogData(times, outputs_log[:,0:14], what='output', figure_name='output log')
 
 
 def plotLogData(time,log,what='phase',figure_name='phase log'):
