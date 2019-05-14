@@ -52,6 +52,14 @@ def motor_output(phases, amplitudes):
                 motor_output[i] = -phases[i] 
                 #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i])) # NOTE - comment this when done debugging 
         else:
+            # Avoid leg rewind 
+            """ i = 1
+            while True:
+                diff = np.abs(phases[i]) - i*2*np.pi 
+                if diff <= 2*np.pi:
+                    motor_output[i] = -(phases[i] + diff if phases[i] <=0 else phases[i] - diff)
+                    break 
+                i+=1 """ 
             motor_output[i] = 0
     return motor_output
 

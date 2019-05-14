@@ -32,6 +32,8 @@ class ExperimentLogger(object):
         self.network_state = np.zeros([n_iterations, 48], dtype=self.DTYPE)
         # Network's output
         self.network_output= np.zeros([n_iterations, 10+4], dtype=self.DTYPE)
+        # GPS location (x,y,z) 
+        self.gps = np.zeros([n_iterations,3], dtype=self.DTYPE)
         # Parameters
         self.parameters = kwargs
         # Filename
@@ -74,6 +76,10 @@ class ExperimentLogger(object):
         """Log network's output"""
         self.network_output[iteration,:] = output 
 
+    def log_gps(self,iteration, gps):
+        """Log gps reading"""
+        self.gps[iteration,:] = gps 
+
     def save_data(self):
         """Save data to file"""
         # Unlogged initial positions (Step not updated by Webots)
@@ -93,6 +99,7 @@ class ExperimentLogger(object):
             network=self.network,
             network_state = self.network_state,
             network_output = self.network_output, 
+            gps = self.gps, 
             **self.parameters
         )
 

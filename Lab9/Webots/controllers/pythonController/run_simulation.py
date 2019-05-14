@@ -3,7 +3,7 @@
 import cmc_pylog as pylog
 from cmc_robot import SalamanderCMC
 
-def run_simulation(world, parameters, timestep, n_iterations, logs):
+def run_simulation(world, parameters, timestep, n_iterations, logs, transition=False):
     """Run simulation"""
 
     # Set parameters
@@ -24,11 +24,21 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
     network = salamander.network 
 
     # Simulation
+    x_threshold = 1.2 
     iteration = 0
     while world.step(timestep) != -1:
         iteration += 1
         if iteration >= n_iterations:
             break
+        
+        #print(salamander.gps.getValues())
+        if transition:
+            if x_threshold < salamander.gps.getValues()[0]:
+                # Switch to swimming 
+                #print('Now swimming')
+                parameters.drive = 5 
+                salamander.network.parameters.update(parameters)
+                
         salamander.step()
         
     # Log data

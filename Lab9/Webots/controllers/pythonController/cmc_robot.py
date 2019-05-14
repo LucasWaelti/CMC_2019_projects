@@ -94,37 +94,41 @@ class SalamanderCMC(object):
                 self.iteration, i,
                 motor.getTorqueFeedback()
             )
-            for i, motor in enumerate(self.motors_legs):
-                # Position
-                self.log.log_joint_position(
-                    self.iteration, 10+i,
-                    self.position_sensors[10+i].getValue()
-                )
-                # Command
-                self.log.log_joint_cmd(
-                    self.iteration, 10+i,
-                    motor.getTargetPosition()
-                )
-                # Torque
-                self.log.log_joint_torque(
-                    self.iteration, 10+i,
-                    motor.getTorqueFeedback()
-                )
-                # Torque feedback
-                self.log.log_joint_torque_feedback(
-                    self.iteration, 10+i,
-                    motor.getTorqueFeedback()
-                )
-
-            # TODO - add network outputs logging 
-            self.log.log_network_state(
-                self.iteration, 
-                self.network.state
+        for i, motor in enumerate(self.motors_legs):
+            # Position
+            self.log.log_joint_position(
+                self.iteration, 10+i,
+                self.position_sensors[10+i].getValue()
             )
-            self.log.log_network_output(
-                self.iteration,
-                self.network.get_motor_position_output()
-            ) 
+            # Command
+            self.log.log_joint_cmd(
+                self.iteration, 10+i,
+                motor.getTargetPosition()
+            )
+            # Torque
+            self.log.log_joint_torque(
+                self.iteration, 10+i,
+                motor.getTorqueFeedback()
+            )
+            # Torque feedback
+            self.log.log_joint_torque_feedback(
+                self.iteration, 10+i,
+                motor.getTorqueFeedback()
+            )
+
+        # add network outputs logging 
+        self.log.log_network_state(
+            self.iteration, 
+            self.network.state
+        )
+        self.log.log_network_output(
+            self.iteration,
+            self.network.get_motor_position_output()
+        ) 
+        self.log.log_gps(
+            self.iteration, 
+            self.gps.getValues()
+        )
 
     def step(self):
         """Step"""

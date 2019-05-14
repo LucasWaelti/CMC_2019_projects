@@ -16,6 +16,9 @@ def get_amplitude_search_space():
     return num_trials,amplitudes
 
 def exercise_9f(world, timestep, reset):
+    '''
+        Choose which grid search to run 
+    '''
     #exercise_9f1(world, timestep, reset)
     exercise_9f2(world, timestep, reset)
 
@@ -39,7 +42,7 @@ def exercise_9f1(world, timestep, reset):
         parameters = SimulationParameters(
             drive=2.5,
             amplitude=[0.15,0.15], # head, tail 
-            phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body -> but swim BACKWARD!! 
+            phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body
             turn=None, 
             couplingBody=10, 
             couplingLeg=30,
@@ -77,7 +80,7 @@ def exercise_9f2(world, timestep, reset):
         parameters = SimulationParameters(
             drive=2.5,
             amplitude=[amplitude,amplitude], # head, tail 
-            phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body -> but swim BACKWARD!! 
+            phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body 
             turn=None, 
             couplingBody=10, 
             couplingLeg=30,
