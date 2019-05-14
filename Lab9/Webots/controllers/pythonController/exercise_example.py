@@ -24,17 +24,17 @@ def exercise_example(world, timestep, reset):
         # for ...
     ]"""
     parameter_set = [SimulationParameters(
-        drive=2.5,
-        amplitude=[0.15,0.15], # head, tail 
-        phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body
+        drive=5,
+        amplitude=[0.08,0.15], # head, tail 
+        phase_lag=1.0, # total phase lag of 2 pi along the body 2*np.pi/10
         turn=None, 
         couplingBody=10, 
         couplingLeg=30,
         rate=20,
-        simulation_duration = 10,
+        simulation_duration = 30,
         limb_spine_phase_lag=0
         )
-        for drive in [2.5,5] # Implement walking and swimming 
+        for drive in [5] # Implement walking and swimming 
     ]
 
     # Grid search
