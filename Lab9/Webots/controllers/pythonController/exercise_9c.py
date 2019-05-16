@@ -6,9 +6,11 @@ from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
 import plot_results 
 
+sim_time= 30
+
 def get_search_space():
     num_trials = 5
-    rhead = np.linspace(0.05, 0.2, num=num_trials) 
+    rhead = np.linspace(0.05, 0.4, num=num_trials) 
     rtail = rhead   
     return num_trials,rhead,rtail 
 
@@ -48,7 +50,7 @@ def exercise_9c(world, timestep, reset):
                 couplingLeg=30,
                 rate=20,
                 #cRBody = [0.025, 0.005],
-                simulation_duration = 10
+                simulation_duration = sim_time
             )
 
             reset.reset()
@@ -94,18 +96,18 @@ def compute_energy_speed():
                 max_energy.append([rhead,rtail,np.max(np.max(energy))])
 
                 # Compute the speed
-                speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
-                max_speed.append([rhead,rtail,np.max(speed[:,0],axis=0)])
+                speed = (link_data[-1,0] - link_data[0,0])/sim_time
+                max_speed.append([rhead,rtail,speed])
 
     max_energy = np.array(max_energy)
     plt.figure()
     plot_results.plot_2d(max_energy,energy_labels,n_data=len(max_energy))
-    plt.savefig("./logs/9c/energy.jpg") 
+    plt.savefig("./logs/9c/energy.png") 
 
     max_speed = np.array(max_speed)
     plt.figure()
     plot_results.plot_2d(max_speed,speed_labels,n_data=len(max_speed))
-    plt.savefig("./logs/9c/speed.jpg") 
+    plt.savefig("./logs/9c/speed.png") 
 
     plt.show() 
 
