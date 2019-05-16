@@ -7,7 +7,7 @@ from simulation_parameters import SimulationParameters
 import plot_results 
 
 # Simulation run time in seconds 
-sim_time = 30
+sim_time = 12 
 
 def get_search_space():
     num_trials = 5
@@ -99,7 +99,11 @@ def compute_energy_speed():
                 #speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
                 speed_x = (link_data[-1,0] - link_data[0,0])/sim_time
                 speed_z = np.abs((link_data[-1,2] - link_data[0,2])/sim_time)
-                max_speed.append([amplitude,phase_lag,np.sqrt(speed_x**2+speed_z**2)]) # np.max(speed[:,0],axis=0)
+                speed = np.sqrt(speed_x**2+speed_z**2)
+                if speed > 2:
+                    speed = 0
+                #print(speed_x,speed_z)
+                max_speed.append([amplitude,phase_lag,speed]) # np.max(speed[:,0],axis=0) 
 
     max_energy = np.array(max_energy)
     plt.figure()

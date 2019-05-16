@@ -10,7 +10,7 @@ WorldInfo {
     "A. Ijspeert, A. Crespi, D. Ryczko, and J.M. Cabelguen. From swimming to walking with a salamander robot driven by a spinal cord model. Science, 315(5817):1416-1420, 2007."
   ]
   title "Salamandra Robotica"
-  basicTimeStep 8
+  basicTimeStep 4
   contactProperties [
     ContactProperties {
       material1 "leg"
