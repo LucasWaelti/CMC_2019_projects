@@ -23,11 +23,17 @@ class ExperimentLogger(object):
         self.links = np.zeros([n_iterations, n_links, 3], dtype=self.DTYPE)
         # Joints: Log position, velocity, command, torque, torque_fb, output
         self.joints = np.zeros([n_iterations, n_joints, 6], dtype=self.DTYPE)
-        # Network: Log phases, amplitudes, outputs
+        # Network: Log phases, amplitudes, outputs - NOTE: UNUSED 
         self.network = np.zeros(
             [n_iterations, 2*n_joints, 3],
             dtype=self.DTYPE
         )
+        # Network's state (48 values: 24 phases + 24 amplitudes)
+        self.network_state = np.zeros([n_iterations, 48], dtype=self.DTYPE)
+        # Network's output
+        self.network_output= np.zeros([n_iterations, 10+4], dtype=self.DTYPE)
+        # GPS location (x,y,z) 
+        self.gps = np.zeros([n_iterations,3], dtype=self.DTYPE)
         # Parameters
         self.parameters = kwargs
         # Filename
@@ -41,9 +47,9 @@ class ExperimentLogger(object):
         """Log joint position"""
         self.joints[iteration, joint, self.ID_J["position"]] = position
 
-    def log_joint_velocity(self, iteration, joint, velocity):
+    '''def log_joint_velocity(self, iteration, joint, velocity):
         """Log joint velocity"""
-        self.joints[iteration, joint, self.ID_J["velocity"]] = velocity
+        self.joints[iteration, joint, self.ID_J["velocity"]] = velocity'''
 
     def log_joint_cmd(self, iteration, joint, cmd):
         """Log joint cmd"""
@@ -61,11 +67,29 @@ class ExperimentLogger(object):
         """Log joint output"""
         self.joints[iteration, joint, self.ID_J["output"]] = output
 
+    # add network logging
+    def log_network_state(self, iteration, state):
+        """Log network's state"""
+        self.network_state[iteration,:] = state 
+
+    def log_network_output(self, iteration, output):
+        """Log network's output"""
+        self.network_output[iteration,:] = output 
+
+    def log_gps(self,iteration, gps):
+        """Log gps reading"""
+        self.gps[iteration,:] = gps 
+
     def save_data(self):
         """Save data to file"""
         # Unlogged initial positions (Step not updated by Webots)
         self.links[0, :, :] = self.links[1, :, :]
         self.joints[0, :, :] = self.joints[1, :, :]
+        # Diff position to extract velocity
+        self.joints[:, :, 1] = (
+            np.diff(self.joints[:, :, 0], axis=0, prepend=0)
+            / self.parameters["timestep"]
+        )
         # Save
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         np.savez(
@@ -73,6 +97,9 @@ class ExperimentLogger(object):
             links=self.links,
             joints=self.joints,
             network=self.network,
+            network_state = self.network_state,
+            network_output = self.network_output, 
+            gps = self.gps, 
             **self.parameters
         )
 

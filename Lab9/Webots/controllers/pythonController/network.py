@@ -5,6 +5,7 @@ import numpy as np
 from solvers import euler, rk4
 from robot_parameters import RobotParameters
 
+limb_spine_lag = 0 # HACK - dirty, dirty... 
 
 def network_ode(_time, state, parameters):
     """Network_ODE
@@ -33,6 +34,8 @@ def network_ode(_time, state, parameters):
 
 def motor_output(phases, amplitudes):
     """Motor output - q_i"""
+    global limb_spine_lag
+
     n_body_joints = int(len(amplitudes) / 2 - 2) # 10 
     motor_output = np.zeros(int(len(amplitudes) / 2 + 2)) # 14
 
@@ -46,12 +49,20 @@ def motor_output(phases, amplitudes):
         if (amplitudes[10+i] > 0.001):
             # TODO - avoid hardcoding this! Should not require explicit offset like this!! Bad! 
             if i == 11 or i == 12:
-                motor_output[i] = -phases[i] + np.pi
-                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i] + np.pi)) # NOTE - comment this when done debugging 
+                motor_output[i] = -phases[i]-limb_spine_lag + np.pi
+                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i]-limb_spine_lag + np.pi)) # NOTE - comment this when done debugging 
             else:
-                motor_output[i] = -phases[i] 
-                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i])) # NOTE - comment this when done debugging 
+                motor_output[i] = -phases[i]-limb_spine_lag 
+                #motor_output[i] = amplitudes[10+i]*(1 + np.cos(-phases[i]-limb_spine_lag)) # NOTE - comment this when done debugging 
         else:
+            # Avoid leg rewind 
+            """ i = 1
+            while True:
+                diff = np.abs(phases[i]) - i*2*np.pi 
+                if diff <= 2*np.pi:
+                    motor_output[i] = -(phases[i] + diff if phases[i] <=0 else phases[i] - diff)
+                    break 
+                i+=1 """ 
             motor_output[i] = 0
     return motor_output
 
@@ -118,13 +129,16 @@ class SalamanderNetwork(ODESolver):
     """Salamander oscillator network"""
 
     def __init__(self, timestep, parameters):
+        global limb_spine_lag 
         super(SalamanderNetwork, self).__init__(
             ode=network_ode,
             timestep=timestep,
             solver=rk4  # Feel free to switch between Euler (euler) or
                         # Runge-Kutta (rk4) integration methods
         )
-        # States
+        # Store the phase lag between legs and spine - HACK 
+        limb_spine_lag = parameters.limb_spine_phase_lag
+        # States 
         self.state = RobotState.salamandra_robotica_2()
         # Parameters
         self.parameters = RobotParameters(parameters)
@@ -134,6 +148,7 @@ class SalamanderNetwork(ODESolver):
     def step(self):
         """Step"""
         self.state += self.integrate(self.state, self.parameters)
+        return self.state 
 
     def get_motor_position_output(self):
         """Get motor position"""

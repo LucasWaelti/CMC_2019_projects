@@ -28,6 +28,8 @@ class RobotParameters(dict):
         self.phase_bias = np.zeros([self.n_oscillators, self.n_oscillators]) # 24 x 24
         self.rates = np.zeros(self.n_oscillators) # 24 
         self.nominal_amplitudes = np.zeros(self.n_oscillators) # 24 
+        self.turn = parameters.turn # between -1 (left) and 1 (right)
+        self.drive = parameters.drive 
         self.update(parameters)
 
     def update(self, parameters):
@@ -37,19 +39,20 @@ class RobotParameters(dict):
         self.set_phase_bias(parameters)  # theta_i
         self.set_amplitudes_rate(parameters)  # a_i
         self.set_nominal_amplitudes(parameters)  # R_i
+        self.drive = parameters.drive 
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
         #pylog.warning("Frequencies weights must be set")
         #self.freqs[:self.n_oscillators] = np.ones(self.n_oscillators) * parameters.freqs
-        d = parameters.drive
+        d = self.drive
         if (d <= parameters.dBody[1] and d >= parameters.dBody[0]):
-            self.freqs[:self.n_oscillators_body] = parameters.cVBody[0] * parameters.drive + parameters.cVBody[1]
+            self.freqs[:self.n_oscillators_body] = parameters.cVBody[0] * self.drive + parameters.cVBody[1]
         else:
             self.freqs[:self.n_oscillators_body] = parameters.vSat
         
         if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
-            self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.cVLimb[0] * parameters.drive + \
+            self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.cVLimb[0] * self.drive + \
                 parameters.cVLimb[1]
         else:
             self.freqs[self.n_oscillators_body:self.n_oscillators] = parameters.vSat
@@ -102,6 +105,11 @@ class RobotParameters(dict):
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
+
+        spine_index = [0,int(self.n_oscillators_body/2),
+                        int(self.n_oscillators_body/4),
+                        int(3*self.n_oscillators_body/4)]
+
         for i in range(0, self.n_oscillators):
             for j in range(0, self.n_oscillators):
                 if i >= self.n_oscillators_body and j >= self.n_oscillators_body: 
@@ -124,6 +132,12 @@ class RobotParameters(dict):
                         self.phase_bias[i][j] = np.pi
                     if (i == j - 10):
                         self.phase_bias[i][j] = -np.pi
+                
+                elif i < self.n_oscillators_body and j >= self.n_oscillators_body:
+                    # Compute the phase between the legs (j) and the spine (i)
+                    legj = j - self.n_oscillators_body
+                    if i in range(int(spine_index[legj]), int(spine_index[legj] + self.n_oscillators_body/4)):
+                        self.phase_bias[i][j] = parameters.limb_spine_phase_lag
         
         # Store the phase bias in a file for visualization 
         with open('phase_bias.txt','w') as file:
@@ -143,7 +157,7 @@ class RobotParameters(dict):
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        d = parameters.drive
+        d = self.drive 
         head = parameters.amplitude[0]
         tail = parameters.amplitude[1]
         slope = (tail-head)/10
@@ -156,10 +170,13 @@ class RobotParameters(dict):
             self.nominal_amplitudes[:self.n_oscillators_body] = np.hstack((arr, arr)) 
         else:
             self.nominal_amplitudes[:self.n_oscillators_body] = 0
-
+        if self.turn is not None and self.turn >= -1 and self.turn <= 1: 
+            # Apply turning
+            self.nominal_amplitudes[:int(self.n_oscillators_body/2)] *= (1+self.turn)
+            self.nominal_amplitudes[int(self.n_oscillators_body/2):self.n_oscillators_body] *= (1-self.turn)
         # Compute amplitudes for the legs 
         if (d <= parameters.dLimb[1] and d >= parameters.dLimb[0]):
-            offsetLimb = parameters.cRLimb[0] * parameters.drive + parameters.cRLimb[1]
+            offsetLimb = parameters.cRLimb[0] * self.drive + parameters.cRLimb[1] 
         else:
             offsetLimb = parameters.RSat
         # Constant amplitude of legs oscillations 

@@ -3,6 +3,7 @@
 import numpy as np
 from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
+import plot_results 
 
 
 def exercise_example(world, timestep, reset):
@@ -24,14 +25,17 @@ def exercise_example(world, timestep, reset):
     ]"""
     parameter_set = [SimulationParameters(
         drive=5,
-        amplitude=[0.08,0.3], # head, tail 
-        phase_lag=2*np.pi/10,
-        turn=None,
+        amplitude=[0.08,0.15], # head, tail 
+        phase_lag=1.0, # total phase lag of 2 pi along the body 2*np.pi/10
+        turn=None, 
         couplingBody=10, 
         couplingLeg=30,
         rate=20,
-        cRBody = [0.025, 0.005]
-    )]
+        simulation_duration = 30,
+        limb_spine_phase_lag=0
+        )
+        for drive in [5] # Implement walking and swimming 
+    ]
 
     # Grid search
     for simulation_i, parameters in enumerate(parameter_set):
@@ -43,4 +47,5 @@ def exercise_example(world, timestep, reset):
             int(1000*parameters.simulation_duration/timestep),
             logs="./logs/example/simulation_{}.npz".format(simulation_i)
         )
+        plot_results.plot_simulation(plot=True, path="./logs/example/simulation_{}.npz".format(simulation_i)) 
 

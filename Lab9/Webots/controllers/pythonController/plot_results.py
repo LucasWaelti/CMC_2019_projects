@@ -72,17 +72,102 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar = plt.colorbar()
     cbar.set_label(labels[2])
 
+def plot_network_state(times, network_state):
+    n_phases = int(network_state.shape[1]/2) # 24 phases and 24 amplitudes
+    phases = network_state[:,0:n_phases]
+    amplitudes = network_state[:,n_phases:]
 
-def main(plot=True, path='logs/example/simulation_0.npz'):
-    """Main"""
+    plt.figure('Network state: phase')
+    plt.title('Network state: phase')
+    for i in range(n_phases):
+        plt.plot(times, phases[:,i],label=i)
+    plt.xlabel('time [s]')
+    plt.ylabel('phase [rad]')
+    plt.tight_layout()
+    plt.legend()
+    plt.grid()
+
+    plt.figure('Network state: amplitude')
+    plt.title('Network state: amplitude')
+    for i in range(n_phases):
+        plt.plot(times, amplitudes[:,i],label=i)
+    plt.xlabel('time [s]')
+    plt.ylabel('amplitude []')
+    plt.legend()
+    plt.tight_layout()
+    plt.grid()
+
+def plot_network_output(times, output):
+    plt.figure('Network output')
+    plt.title('Network output')
+    for i in range(output.shape[1]):
+        plt.plot(times, output[:,i],label=i)
+    plt.xlabel('time [s]')
+    plt.ylabel('angle [rad]')
+    plt.tight_layout()
+    plt.legend()
+    plt.grid()
+
+def plot_torques(times, torques):
+    plt.figure('Torques')
+    plt.title('Torques') 
+    for i in range(torques.shape[1]):
+        plt.plot(times,torques[:,i], label=i)
+    plt.xlabel('time [s]')
+    plt.ylabel('Force [N]')
+    plt.tight_layout()
+    plt.legend()
+    plt.grid()
+
+def plot_simulation(plot=True, path='logs/example/simulation_0.npz'):
     # Load data
     with np.load(path) as data:
+        print('Loaded data:',data)
+        timestep = float(data["timestep"])
+        links = data["links"]
+        joints = data["joints"] # (position, velocity, command, torque, torque_fb, output)
+        network = data["network"] # UNUSED - oly contains zero values
+        network_state = data["network_state"]
+        network_output = data["network_output"]
+        link_data = data["links"][:, 0, :] # Only get the head position 
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+
+    print('Retrieved data from log:')
+    print('Links:',links.shape)
+    print('joints:',joints.shape) 
+    #print('network:',network.shape) 
+    print('network_state:',network_state.shape) 
+    print('network_output:',network_output.shape) 
+    print('link_data:',link_data.shape) 
+    print('joints_data:',joints_data.shape) 
+
+    # Plot data
+    plt.figure("Positions")
+    plot_positions(times, link_data)
+    plt.figure("Trajectories")
+    plot_trajectory(link_data) 
+    plot_network_state(times,network_state)
+    plot_network_output(times, network_output)
+    plot_torques(times, joints[:,:,4]) # 4: torque feedback (check experiment_logger.py)
+
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()
+
+def main(plot=True, path='logs/example/simulation_0.npz'):
+    """Main - use plot_simulation instead""" 
+    # Load data
+    with np.load(path) as data:
+        print('Loaded data:',data)
         timestep = float(data["timestep"])
         amplitude = data["amplitude"]
         phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep) 
 
     # Plot data
     plt.figure("Positions")
