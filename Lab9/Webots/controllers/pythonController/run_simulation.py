@@ -36,7 +36,7 @@ def run_simulation(world, parameters, timestep, n_iterations, logs, transition=F
             if x_threshold < salamander.gps.getValues()[0]:
                 # Switch to swimming 
                 #print('Now swimming')
-                parameters.drive = 5 
+                parameters.drive = 5
                 salamander.network.parameters.update(parameters)
                 
         salamander.step()
