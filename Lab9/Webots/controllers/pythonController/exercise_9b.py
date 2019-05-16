@@ -11,7 +11,7 @@ sim_time = 30
 
 def get_search_space():
     num_trials = 5
-    amplitudes = np.linspace(0.0, 0.5, num=num_trials) 
+    amplitudes = np.linspace(0.05, 0.5, num=num_trials) 
     phase_lags = np.linspace(0,2,num=num_trials)  
     return num_trials,amplitudes,phase_lags 
 
