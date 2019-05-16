@@ -6,7 +6,7 @@ from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
 import plot_results 
 
-sim_time= 30
+sim_time= 12
 
 def get_search_space():
     num_trials = 5
@@ -44,7 +44,7 @@ def exercise_9c(world, timestep, reset):
             parameters = SimulationParameters(
                 drive=5,
                 amplitude=[rhead,rtail], # head, tail 
-                phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body 
+                phase_lag=0.5, # total phase lag of 2 pi along the body 
                 turn=None,
                 couplingBody=10, 
                 couplingLeg=30,

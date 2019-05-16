@@ -6,9 +6,11 @@ from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
 import plot_results 
 
+sim_time= 30
+
 def get_search_space():
     num_trials = 5
-    amplitudes = np.linspace(0.05, 0.2, num=num_trials) 
+    amplitudes = np.linspace(0.12, 0.4, num=num_trials) 
     phase_lags = np.linspace(0.01,2,num=num_trials)  
     return num_trials,amplitudes,phase_lags 
 
@@ -47,7 +49,7 @@ def exercise_9b(world, timestep, reset):
                 couplingLeg=30,
                 rate=20,
                 cRBody = [0.025, 0.005],
-                simulation_duration = 10
+                simulation_duration = sim_time
             )
 
             reset.reset()
@@ -93,8 +95,9 @@ def compute_energy_speed():
                 max_energy.append([amplitude,phase_lag,np.max(np.max(energy))])
 
                 # Compute the speed
-                speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
-                max_speed.append([amplitude,phase_lag,np.max(speed[:,0],axis=0)])
+                # speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)])
+                speed = (link.data[-1,0] - link.data[0,0])/sim_time
+                max_speed.append([amplitude,phase_lag,speed])
 
     max_energy = np.array(max_energy)
     plt.figure()
