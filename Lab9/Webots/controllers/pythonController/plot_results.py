@@ -163,7 +163,7 @@ def main(plot=True, path='logs/example/simulation_0.npz'):
     with np.load(path) as data:
         print('Loaded data:',data)
         timestep = float(data["timestep"])
-        amplitude = data["amplitudes"]
+        amplitude = data["amplitude"]
         phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]

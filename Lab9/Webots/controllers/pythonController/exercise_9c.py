@@ -6,9 +6,11 @@ from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
 import plot_results 
 
+sim_time= 12
+
 def get_search_space():
     num_trials = 5
-    rhead = np.linspace(0.05, 0.2, num=num_trials) 
+    rhead = np.linspace(0.05, 0.4, num=num_trials) 
     rtail = rhead   
     return num_trials,rhead,rtail 
 
@@ -42,13 +44,13 @@ def exercise_9c(world, timestep, reset):
             parameters = SimulationParameters(
                 drive=5,
                 amplitude=[rhead,rtail], # head, tail 
-                phase_lag=2*np.pi/10, # total phase lag of 2 pi along the body 
+                phase_lag=0.5, # total phase lag of 2 pi along the body 
                 turn=None,
                 couplingBody=10, 
                 couplingLeg=30,
                 rate=20,
                 #cRBody = [0.025, 0.005],
-                simulation_duration = 10
+                simulation_duration = sim_time
             )
 
             reset.reset()
@@ -94,18 +96,23 @@ def compute_energy_speed():
                 max_energy.append([rhead,rtail,np.max(np.max(energy))])
 
                 # Compute the speed
-                speed = np.array([(link_data[i+1,:]-link_data[i,:])/timestep for i in range(link_data.shape[0]-1)]) 
-                max_speed.append([rhead,rtail,np.max(speed[:,0],axis=0)])
+                speed_x = (link_data[-1,0] - link_data[0,0])/sim_time
+                speed_z = np.abs((link_data[-1,2] - link_data[0,2])/sim_time)
+                speed = np.sqrt(speed_x**2+speed_z**2)
+                if speed > 2:
+                    speed = 0
+                #print(speed_x,speed_z)
+                max_speed.append([rhead,rtail,speed]) # np.max(speed[:,0],axis=0) 
 
     max_energy = np.array(max_energy)
     plt.figure()
     plot_results.plot_2d(max_energy,energy_labels,n_data=len(max_energy))
-    plt.savefig("./logs/9c/energy.jpg") 
+    plt.savefig("./logs/9c/energy.png") 
 
     max_speed = np.array(max_speed)
     plt.figure()
     plot_results.plot_2d(max_speed,speed_labels,n_data=len(max_speed))
-    plt.savefig("./logs/9c/speed.jpg") 
+    plt.savefig("./logs/9c/speed.png") 
 
     plt.show() 
 
