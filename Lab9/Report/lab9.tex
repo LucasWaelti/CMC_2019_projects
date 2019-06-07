@@ -231,7 +231,7 @@ factor and $ q_i $ the spinal joint angles.
 \end{enumerate}
 
 \paragraph{Results:}
-Figure \ref{fig:Spine_Angle} illustrates the difference between the walking and swimming regimes. During walking, standing waves are generated along the body, while they propagate for swimming, generating thrust through the liquid. The only difference in the command of the network is the drive level, low for walking (typically 2.5) and high for swimming (typically 5). We see that for both drives, the system takes some time to converge to the desired gait and then keeps the gait really stable. 
+Figure \ref{fig:Spine_Angle} illustrates the difference between the walking and swimming regimes. During walking, standing waves are generated along the body, while they propagate for swimming, generating thrust through the liquid. The only difference in the command of the network is the drive level, low for walking (typically 2.5) and high for swimming (typically 5). We see that for both drives, the system takes some time to converge to the desired gait and then maintains a stable gait. 
 
 \begin{figure}[!ht]
   \begin{subfigure}[b]{0.48\textwidth}
@@ -297,14 +297,14 @@ compare to the wavelengths observed in the salamander?
 \paragraph{Results:}
 \textit{The energy was computed as proposed, hence as the integral of the product of the torques and joint speeds.}
 
-The results of the grid search are shown in Figure \ref{fig:9b}. The energy used by the salamander follows a simple relationship: it increases with amplitude and decreases with phase lag. On the contrary, the speed of the robot seems to act like a 2D bell curve: it reaches a maximum for a critical amplitude (0.27) and phase lag (0.6). In that sense, if the salamander wants to only maximize its speed, it should choose these optimal parameters. However, in some cases, the robot should be able to keep a good speed while minimizing its energy consumption. In order to do this, it has two solutions: reducing the amplitude, or increasing the phase lags. By looking closely at \ref{fig:9b_speed}, we see that around the maximum, the absolute value of the derivative with respect to amplitude is way bigger than the one with respect to phase lag. Consequently, to optimize both speed and energy consumption, it would be better to gently increase the phase lags. 
+The results of the grid search are shown in Figure \ref{fig:9b}. The energy used by the salamander follows a simple relationship: it increases with amplitude and decreases with phase lag. On the contrary, the speed of the robot seems to act like a 2D bell curve: it reaches a maximum for a critical amplitude (0.27) and phase lag (0.6). In that sense, if the salamander wants to only maximize its speed, it should choose these optimal parameters. However, in some cases, the robot should be able to keep a good speed while minimizing its energy consumption. In order to do this, it has two solutions: reducing the amplitude, or increasing the phase lags. By looking closely at Figure \ref{fig:9b_speed}, we see that around the maximum, the absolute value of the derivative with respect to amplitude is way bigger than the one with respect to phase lag. Consequently, to optimize both speed and energy consumption, it would be better to gently increase the phase lags. 
 
 It would be interesting to compare our results with real data acquired from a living salamander to investigate how the animal optimizes its gait. One possible experiment would be to see the difference in gait between normal conditions, where the animal is expected to optimize both speed and energy consumption, and stressful conditions where the salamander should have a maximum speed without thinking about its consumption (for example escaping a predator). 
 %While the speed and energy increase with the amplitude, the phase lag between the links of the spine allows the salamander to reduce the required energy to move with similar velocities. Figure \ref{fig:9b} illustrates well this relationship. While maximizing the amplitude is the best way to gain speed, providing large enough phase lags considerably reduce the energy consumption. In that sense, a high amplitude combined with high enough phase lags seems to be the best option for the salamander. It would be interesting to compare our results with real data acquired from a real salamander to investigate how the animal optimizes its gait. 
 
 
 
-The wavelength along the salamander spinal cord is inversely proportional to the phase lags between its joints. First, we have seen that the maximum speed is reached for phase lags of 0.6, really close to $2*\pi/10$: the robot will have a wavelength of one body length when reaching its peak speed. Also,if the salamander wants to minimize its energy consumption while keeping some speed, it will have bigger phase lags as seen before, and thus have a smaller wavelength. Therefore, we could expect a body length longer than the wavelength (see figure \ref{fig:wave}).
+The wavelength along the salamander spinal cord is inversely proportional to the phase lags between its joints. First, we have seen that the maximum speed is reached for phase lags of 0.6, really close to $2*\pi/10$: the robot will have a wavelength of one body length when reaching its peak speed. Also,if the salamander wants to minimize its energy consumption while keeping some speed, it will have bigger phase lags as seen before, and thus have a smaller wavelength. Therefore, we could expect a body length longer than the wavelength (see Figure \ref{fig:wave}).
 %the spinal cord will have more than one wavelength (\ref{fig:wave}).
 \begin{figure}[h]
   \centering
@@ -397,9 +397,9 @@ A steady head is important for the salamanders visual system to be able to exact
 \end{enumerate}
 
 \paragraph{Results:}
-In order to turn, one side of the spine needs to be more stimulated than the other. We achieve this by requiring higher amplitudes on one side than the other. This unbalance generates stronger movements on one side, inducing a turn. This is shown in figure \ref{fig:9d_turning}. 
+In order to turn, one side of the spine needs to be more stimulated than the other. We achieve this by requiring higher amplitudes on one side than the other. This unbalance generates stronger movements on one side, inducing a turn. This is shown in Figure \ref{fig:9d_turning}. 
 
-To swim backward, we need to change the direction of propagation of the waves along the body. By simply applying a negative phase lag to the spine, the robot swims backward as shown in figure \ref{fig:9d_backward}.
+To swim backward, we need to change the direction of propagation of the waves along the body. By simply applying a negative phase lag to the spine, the robot swims backward as shown in Figure \ref{fig:9d_backward}.
 
 \begin{figure}[!ht]
   \begin{subfigure}[b]{0.48\textwidth}
@@ -410,7 +410,7 @@ To swim backward, we need to change the direction of propagation of the waves al
   %
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figures/9d/turning_left_spine_angles.jpg}
-    \caption{Spine motor commands. The blue line indicates the zero, clearly showing the unbalance in the amplitudes between both sides of the spine.}
+    \caption{Spine motor commands. The horizontal blue line indicates the zero, clearly showing the unbalance in the amplitudes between both sides of the spine.}
     \label{fig:9d_turning_angles}
   \end{subfigure}
   \caption{Illustration of how the robot can turn while swimming.}
@@ -471,16 +471,16 @@ However, a good synchronization between the limbs and the body is important. Fig
 \begin{figure}[!ht]
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figures/9f/9f1_speed.jpg}
-    \caption{Walking distance for different phase lags. The best option seems to not have any phase lag at all, as illustrated by the \textit{tendency} curve. }
+    \caption{Average speed for different phase lags. The best option seems to not have any phase lag at all, as illustrated by the \textit{tendency} curve. }
     \label{fig:9f1}
   \end{subfigure}
   %
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figures/9f/9f2_speed.jpg}
-    \caption{Walking distance for different body amplitudes. The distance increases steadily up until about 0.2 [rad]. The results are then no longer reliable or degrade. }
+    \caption{Average speed for different body amplitudes. The distance increases steadily up until about 0.4 [rad]. The results are then no longer reliable or degrade. }
     \label{fig:9f2}
   \end{subfigure}
-  \caption{Walking distances under 10 seconds for different limb/body phase lags (\ref{fig:9f1}) and spine amplitudes (\ref{fig:9f2}).}
+  \caption{Average speed under 10 seconds for different limb/body phase lags (\ref{fig:9f1}) and spine amplitudes (\ref{fig:9f2}).}
   \label{fig:9f}
 \end{figure}
 
@@ -517,7 +517,7 @@ A video illustrating the transition is provided along with this document.
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{figures/9g/spine_angles.jpg}
-    \caption{Effect of the transition from walking to swimming on the spine angles.}
+    \caption{Effect of the transition from walking to swimming on the spine angles. The transition occurs at approximately 19 [s].}
     \label{fig:9g_spine}
 \end{figure}
 \begin{figure}
